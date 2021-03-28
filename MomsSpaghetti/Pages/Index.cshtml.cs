@@ -11,6 +11,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json.Schema;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace MomsSpaghetti.Pages
 {
@@ -38,11 +41,100 @@ namespace MomsSpaghetti.Pages
             _cache = cache;
         }
 
-        public void OnGet()
-        { 
-          
-            
+        public async Task<IActionResult> OnGet()
+        {
+
+
+            if (_cache.Get("searchRecipeResults") != null)
+            {
+
+                //ViewData["recipe"] = SearchRecipes.Result["recipes"][0]["title"];
+                //var temp = TempData["searchResultsString"];
+                var cachedResult = _cache.Get<JObject>("searchRecipeResults");
+                SearchRecipes.Result = cachedResult;
+
+            }
+
+            if (recipeId != null)
+            {
+                String recipeDetails = "";
+                // var recipeObject = new { };
+                try
+                {
+                    HttpClient client = new HttpClient();
+
+                    // client.DefaultRequestHeaders.Add("q", UserInput);
+
+                    HttpResponseMessage response = await client.GetAsync("https://forkify-api.herokuapp.com/api/get?rId=" + recipeId);
+
+
+                    var temp = response;
+
+                    if (response.IsSuccessStatusCode)
+
+                    {
+
+                        recipeDetails = await response.Content.ReadAsStringAsync();
+                        JObject jsonObject = JObject.Parse(recipeDetails);
+                        JSchema schema = JSchema.Parse(System.IO.File.ReadAllText("Recipeschema.json"));
+                        IList<string> validationEvents = new List<string>();
+                        if (jsonObject.IsValid(schema, out validationEvents))
+                        {
+
+                            Recipe.RecipeId = recipeId;
+                            Recipe.Title = jsonObject["recipe"]["title"].ToString();
+                            Recipe.Image = jsonObject["recipe"]["image_url"].ToString();
+                            Recipe.Author = jsonObject["recipe"]["publisher"].ToString();
+                            Recipe.Url = jsonObject["recipe"]["source_url"].ToString();
+                            Recipe.Ingredients = jsonObject["recipe"]["ingredients"].ToArray();
+
+
+                            //UserSearch SearchRecipes = new UserSearch();
+                            // recipeObject = jsonObject;
+                            // ViewData["result"] = SearchRecipes.Result["recipes"][0]["title"];
+
+                            /*  var props = SearchRecipes.Result.Properties();
+                             var  propsArray = props.ToArray();
+                              var first = propsArray[1].Value[0]["title"];  //Upto VALUE[0] gives the first recipe object
+
+
+                              */
+
+                        }
+
+
+
+                        else
+                        {
+                            foreach (string evt in validationEvents)
+                            {
+                                Console.WriteLine(evt);
+
+                            }
+                            // ViewData["result"] = new List<result>();
+                        }
+
+
+                    }
+
+
+
+                }
+                catch (Exception err)
+                {
+                    //return RedirectToPage("Error", err.Message);
+
+                }
+
+            }
+
+
+            return Page();
         }
+
+
+
+
 
         public JsonResult OnPostAddLike( string msg)
         {
