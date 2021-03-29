@@ -1,8 +1,12 @@
 ﻿@page
 @using Newtonsoft.Json
+@using Newtonsoft.Json.Linq;
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
+    var likedRecipes = (List<JObject>)ViewData["LikedRecipes"];
+
+
 
 }
 
@@ -51,19 +55,42 @@
                     </div>
                     <div class="likes__panel">
                         <ul class="likes__list">
+                            
+        @if (likedRecipes != null)
+                                 {
+
+                                     foreach (var recipe in likedRecipes)
+                                     {
+                                         <li>
+                                             <a class="likes__link" href="#@recipe["id"]">
+                                                 <figure class="likes__fig">
+                                                     <img src="@recipe["image"]" alt="Test">
+                                                 </figure>
+                                                 <div class="likes__data">
+                                                     <h4 class="likes__name">@recipe["title"]</h4>
+                                                     <p class="likes__author">@recipe["author"]</p>
+                                                 </div>
+                                             </a>
+                                         </li>
+                                     }
+
+
+                                 }
+                            
+
                             <!--
-                            <li>
-                                <a class="likes__link" href="#23456">
-                                    <figure class="likes__fig">
-                                        <img src="img/test-1.jpg" alt="Test">
-                                    </figure>
-                                    <div class="likes__data">
-                                        <h4 class="likes__name">Pasta with Tomato ...</h4>
-                                        <p class="likes__author">The Pioneer Woman</p>
-                                    </div>
-                                </a>
-                            </li>
-                            -->
+    <li>
+        <a class="likes__link" href="#23456">
+            <figure class="likes__fig">
+                <img src="img/test-1.jpg" alt="Test">
+            </figure>
+            <div class="likes__data">
+                <h4 class="likes__name">Pasta with Tomato ...</h4>
+                <p class="likes__author">The Pioneer Woman</p>
+            </div>
+        </a>
+    </li>
+    -->
                         </ul>
                     </div>
                 </div>
@@ -349,6 +376,8 @@
             </div>
         </div>
 
+
+
         @section Scripts{
 
 
@@ -364,29 +393,77 @@
 
                     };
                     $.fn.addLike = function (likes) {
-                        if(likes.length==0) {
+                       // if(likes.length==0) {
 
-                           // var newLike = `@Model.Recipe.RecipeId`;
-                            var newLike = `@Model.Recipe`;
-                            console.log(newLike);
-                            likes[likes.length] = newLike;
+                        var likedRecipeId = `@Model.Recipe.RecipeId`;
+                        var  likedImage= `@Model.Recipe.Image`;
+                        var likedAuthor = `@Model.Recipe.Author`;
+                        var likedTitle = `@Model.Recipe.Title`;
+
+                        var newLike = {
+
+                            id: likedRecipeId,
+                            image: likedImage,
+                            author: likedAuthor,
+                            title: likedTitle
+
+                        }
+
+                            //var newLike = `@Model.Recipe`;
+                           // console.log(newLike);
+                          // likes[likes.length] = newLike;
+                            //console.log(likes);
+                        $.ajax({
+                            type: "POST",
+                            url: "/Index?handler=Send",
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("XSRF-TOKEN",
+                                    $('input:hidden[name="__RequestVerificationToken"]').val());
+                            },
+                            data: JSON.stringify(newLike),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                console.log(response);
+                                var responseObjectArray = JSON.parse(response);
+                                console.log(responseObjectArray);
+                                console.log("inside addlike");
+                               // var dvItems = $(".likes__list");
+                                //dvItems.empty();
+                                //$.each(response, function (i, item) {
+                                //   // var $tr = $('<li>').append(item).appendTo(dvItems);
+                                //    $.fn.renderLike(item);
+                                    
+                                //});
+                                //for (var i = 0; i < responseObjectArray.length; i++) {
+
+                                //    $.fn.renderLike(responseObjectArray[i]);
+                                //}
+
+                                $.fn.renderLike(responseObjectArray[responseObjectArray.length-1]);
+                            },
+                            failure: function (response) {
+                                alert(response);
+                            }
+                        });
                             return newLike;
 
 
-                        }
+                      //  }
 
 
                     };
                     $.fn.renderLike = function (like) {
-
+                        console.log(like.id);
+                        console.log("inside renderLike");
                         var markup = `<li>
-                            <a class="likes__link" href="#${like.RecipeId}">
+                            <a class="likes__link" href="#${like.id}">
                                 <figure class="likes__fig">
-                                    <img src="${like.Image}" alt="${like.Title}">
+                                    <img src="${like.image}" alt="${like.title}">
                                 </figure>
                                 <div class="likes__data">
-                                    <h4 class="likes__name">${like.Title}</h4>
-                                    <p class="likes__author">${like.Author}</p>
+                                    <h4 class="likes__name">${like.title}</h4>
+                                    <p class="likes__author">${like.author}</p>
                                 </div>
                             </a>
                         </li>`;
@@ -396,7 +473,7 @@
 
 
                         $(".likes__list").append(markup);
-                        alert("inside render like");
+                       // alert("inside render like");
 
                     };
 
@@ -404,21 +481,27 @@
 
                     $(document).ready(function () {
 
-                        var likes = `@Model.Like.Likes`;
-                        isLiked = !isLiked;
+                        var likes = [];
+                        //var recipe = ;
+                        //console.log(recipe.RecipeId);
+
                         //$.fn.toggleLikeBtn(isLiked);
                         $(".recipe__love").click(function () {
-                            var newLike = $.fn.addLike(likes);
+                            isLiked = !isLiked;
+                            var newLike = $.fn.addLike();
+                            likes.push(newLike);
+
+                            //console.log(recipe);
 
                             $.fn.toggleLikeBtn(isLiked);
-                            $.fn.renderLike(newLike);
+                           // $.fn.renderLike(newLike);
 
                         });
 
 
 
 
-   
+
                             //var person = {};
                             //person.Name = $("#txtName").val();
                             //$.ajax({

@@ -14,6 +14,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.IO;
 
 namespace MomsSpaghetti.Pages
 {
@@ -116,8 +117,7 @@ namespace MomsSpaghetti.Pages
 
 
                     }
-
-
+                  
 
                 }
                 catch (Exception err)
@@ -128,10 +128,69 @@ namespace MomsSpaghetti.Pages
 
             }
 
+            if (_cache.Get<List<JObject>>("LikedRecipes") != null)
+            {
+                ViewData["LikedRecipes"] = _cache.Get<List<JObject>>("LikedRecipes");
+
+            }
 
             return Page();
         }
 
+        public  ActionResult OnPostSend()
+        {
+
+
+            // JObject returnTemp = null;
+            var likedRecipes = new List<JObject>();
+            string requestBody;
+            string likedRecipesJSON="";
+                MemoryStream stream = new MemoryStream();
+                Request.Body.CopyTo(stream);
+                stream.Position = 0;
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                     requestBody = reader.ReadToEnd();
+                    if (requestBody.Length > 0)
+                    {
+                        var obj = JObject.Parse(requestBody);
+                        if (obj != null)
+                        {
+                        // var temp = Like.Likes;
+                        // var  myList = new List<Object>();
+                        var cachedResult = _cache.Get<List<JObject>>("LikedRecipes");
+                        if (Like.Likes == null && cachedResult == null) {
+                            Like.Likes = new List<JObject>();
+                            Like.Likes.Add(obj);
+                            _cache.Set<List<JObject>>("LikedRecipes", Like.Likes);
+                        }
+                        else {
+                            Like.Likes = _cache.Get<List<JObject>>("LikedRecipes");
+                            Like.Likes.Add(obj);
+                            _cache.Set<List<JObject>>("LikedRecipes", Like.Likes);
+                        }
+                       
+                        
+                       // ViewData["LikedRecipes"] = _cache.Get<List<JObject>>("LikedRecipes");
+                       likedRecipes = _cache.Get<List<JObject>>("LikedRecipes");
+                        
+                        likedRecipesJSON = JsonConvert.SerializeObject(likedRecipes);
+                        // returnTemp = temp;
+                        //foreach (var recipe in temp)
+                        //{
+                        //    var image = recipe["image"];
+
+                        //        }
+                        //Like.Likes.SetValue(obj, Like.Likes.Length);
+                        // Like.Likes.SetValue(obj, 0);
+                    }
+                    }
+                }
+
+            
+            
+            return new JsonResult(likedRecipesJSON);
+        }
 
 
 
