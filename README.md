@@ -13,13 +13,13 @@ _Tom Thomas Paul_
 
 ## Introduction
 
-Nothing comes close to each of our mom's cooking, and it is near impossible to recreate it without any help. This is where Mom's Spaghetti can help you:
+Nothing comes close to each of our mom's cooking, but with the new Mom's Spaghetti site we can help you achieve something close:
 
 We have abducted some of the best home cooks from across the world and coerced them to share their finger-licking recipes for all of us to recreate.
 - Search for your cravings and we will provide you with the right recipes.
 - No more hassle of doing mental athletics to figure out how many ingredients would be required for increased servings. As we have dynamic recipes which change ingredients quantity and cooking duration as per servings.
 - You can mark your fav recipes.
-- If you do not like the recipe, you can send us feedback and we would not release the wonderful moms till they get it to your satisfaction.
+- If you do not like the recipe, you can send us feedback and we will not release these wonderful moms till they get it to your satisfaction.
 
 
 Now everyone can make food which would make their mom proud.
