@@ -453,7 +453,8 @@
                                 //    $.fn.renderLike(responseObjectArray[i]);
                                 //}
 
-                                $.fn.renderLike(responseObjectArray[responseObjectArray.length-1]);
+                                $.fn.renderLike(responseObjectArray[responseObjectArray.length - 1]);
+                                $.fn.toggleLikeBtn(true);
                             },
                             failure: function (response) {
                                 alert(response);
@@ -521,7 +522,7 @@
 
                                     $.fn.renderLike(responseObjectArray[i]);
                                 }
-
+                                $.fn.toggleLikeBtn(false);
                                // $.fn.renderLike(responseObjectArray[responseObjectArray.length - 1]);
                             },
                             failure: function (response) {
@@ -620,18 +621,10 @@
                                     alert(response);
                                 }
                             });
-                           @*var likeFound = likesArray.find(like => like.id == `@Model.Recipe.RecipeId`);
-                            if (likeFound) {
-                                $.fn.deleteLike(likeFound);
-
-                            } else {
-
-                                var newLike = $.fn.addLike();
-                                likesIdArray.push(newLike.id);
-                            }*@
+                         
 
 
-                            $.fn.toggleLikeBtn(isLiked);
+                           // $.fn.toggleLikeBtn(isLiked);
                            // $.fn.renderLike(newLike);
 
                         });
