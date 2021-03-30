@@ -137,6 +137,29 @@ namespace MomsSpaghetti.Pages
             return Page();
         }
 
+        public ActionResult OnGetLiked()
+        {
+            var response = "false";
+            var recipeId =Request.Query["recipeId"];
+            var cachedResult = _cache.Get<List<JObject>>("LikedRecipes");
+            if (cachedResult != null) {
+                var item = cachedResult.SingleOrDefault(x => x["id"].ToString().Equals(recipeId));
+                if (item != null)
+                {
+                    var itemJSON = JsonConvert.SerializeObject(item);
+                    return new JsonResult(itemJSON);
+                }
+
+
+
+
+            }
+
+
+
+            return new JsonResult(response);
+        }
+
         public  ActionResult OnPostSend()
         {
 
@@ -193,12 +216,48 @@ namespace MomsSpaghetti.Pages
         }
 
 
-
-
-        public JsonResult OnPostAddLike( string msg)
+        public ActionResult OnPostDeleteLiked()
         {
-            return new JsonResult(msg);
+
+
+            // JObject returnTemp = null;
+            //var likedRecipes = new List<JObject>();
+            string requestBody;
+            string objJSON = "";
+            MemoryStream stream = new MemoryStream();
+            Request.Body.CopyTo(stream);
+            stream.Position = 0;
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                requestBody = reader.ReadToEnd();
+                if (requestBody.Length > 0)
+                {
+                    var obj = JObject.Parse(requestBody);
+                    if (obj != null)
+                    {
+                        // var temp = Like.Likes;
+                        // var  myList = new List<Object>();
+                        // var cachedResult = _cache.Get<List<JObject>>("LikedRecipes");
+                        Console.WriteLine(Like.Likes);
+                        Like.Likes = _cache.Get<List<JObject>>("LikedRecipes");
+                        var item = Like.Likes.SingleOrDefault(x => x["id"].ToString().Equals(obj["id"].ToString()));
+                        Like.Likes.Remove(item);
+                        Console.WriteLine(Like.Likes);
+                        _cache.Set<List<JObject>>("LikedRecipes", Like.Likes);
+                       objJSON = JsonConvert.SerializeObject(Like.Likes);
+
+
+                    }
+                }
+            }
+
+
+
+            return new JsonResult(objJSON);
         }
+
+
+    
         public async Task<IActionResult>  OnPost()
         {   
             String responseContent="";
@@ -247,10 +306,15 @@ namespace MomsSpaghetti.Pages
 
             }
 
-       
+
 
             // return RedirectToPage("/ResultsPage", new { result = SearchRecipes.Result }) ;
             //return Content(responseContent);
+            if (_cache.Get<List<JObject>>("LikedRecipes") != null)
+            {
+                ViewData["LikedRecipes"] = _cache.Get<List<JObject>>("LikedRecipes");
+
+            }
             return Page();
 
 

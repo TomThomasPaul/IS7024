@@ -1,10 +1,13 @@
 ﻿@page
 @using Newtonsoft.Json
 @using Newtonsoft.Json.Linq;
+
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
     var likedRecipes = (List<JObject>)ViewData["LikedRecipes"];
+
+
 
 
 
@@ -18,7 +21,13 @@
 
 
 @{
-
+    var iconString = "icon-heart-outlined";
+    @if (likedRecipes != null)
+    {
+        var currentRecipeId = Model.Recipe.RecipeId;
+        var likedRecipe = likedRecipes.Find(recipe => recipe["id"].ToString().Equals(currentRecipeId));
+        if (likedRecipe != null) { iconString = "icon-heart"; };
+    }
 
     <html>
 
@@ -55,42 +64,42 @@
                     </div>
                     <div class="likes__panel">
                         <ul class="likes__list">
-                            
-        @if (likedRecipes != null)
-                                 {
 
-                                     foreach (var recipe in likedRecipes)
-                                     {
-                                         <li>
-                                             <a class="likes__link" href="#@recipe["id"]">
-                                                 <figure class="likes__fig">
-                                                     <img src="@recipe["image"]" alt="Test">
-                                                 </figure>
-                                                 <div class="likes__data">
-                                                     <h4 class="likes__name">@recipe["title"]</h4>
-                                                     <p class="likes__author">@recipe["author"]</p>
-                                                 </div>
-                                             </a>
-                                         </li>
-                                     }
+                            @if (likedRecipes != null)
+                            {
+
+                                foreach (var recipe in likedRecipes)
+                                {
+                                    <li>
+                                        <a class="likes__link" href="#@recipe["id"]">
+                                            <figure class="likes__fig">
+                                                <img src="@recipe["image"]" alt="Test">
+                                            </figure>
+                                            <div class="likes__data">
+                                                <h4 class="likes__name">@recipe["title"]</h4>
+                                                <p class="likes__author">@recipe["author"]</p>
+                                            </div>
+                                        </a>
+                                    </li>
+                                }
 
 
-                                 }
-                            
+                            }
+
 
                             <!--
-    <li>
-        <a class="likes__link" href="#23456">
-            <figure class="likes__fig">
-                <img src="img/test-1.jpg" alt="Test">
-            </figure>
-            <div class="likes__data">
-                <h4 class="likes__name">Pasta with Tomato ...</h4>
-                <p class="likes__author">The Pioneer Woman</p>
-            </div>
-        </a>
-    </li>
-    -->
+                            <li>
+                                <a class="likes__link" href="#23456">
+                                    <figure class="likes__fig">
+                                        <img src="img/test-1.jpg" alt="Test">
+                                    </figure>
+                                    <div class="likes__data">
+                                        <h4 class="likes__name">Pasta with Tomato ...</h4>
+                                        <p class="likes__author">The Pioneer Woman</p>
+                                    </div>
+                                </a>
+                            </li>
+                            -->
                         </ul>
                     </div>
                 </div>
@@ -157,7 +166,7 @@
             </div>
 
             <div class="recipe">
-                @if (Model.Recipe.RecipeId != null)
+                @if (Model.Recipe.Title != null)
                 {
 
 
@@ -200,9 +209,10 @@
                             </div>
 
                         </div>
+
                         <button class="recipe__love">
                             <svg class="header__likes">
-                                <use href="img/icons.svg#icon-heart-outlined"></use>
+                                <use href="img/icons.svg#@iconString"></use>
                             </svg>
                         </button>
                     </div>
@@ -381,8 +391,9 @@
         @section Scripts{
 
 
-            <script>
+                <script>
                     var isLiked = false;
+                    var likesArray = [];
                        //
 
                     $.fn.toggleLikeBtn = function (isLiked) {
@@ -392,9 +403,10 @@
 
 
                     };
-                    $.fn.addLike = function (likes) {
+                    $.fn.addLike = function () {
                        // if(likes.length==0) {
 
+                        console.log("begginning of addlike");
                         var likedRecipeId = `@Model.Recipe.RecipeId`;
                         var  likedImage= `@Model.Recipe.Image`;
                         var likedAuthor = `@Model.Recipe.Author`;
@@ -426,6 +438,7 @@
                             success: function (response) {
                                 console.log(response);
                                 var responseObjectArray = JSON.parse(response);
+                                likesArray = responseObjectArray;
                                 console.log(responseObjectArray);
                                 console.log("inside addlike");
                                // var dvItems = $(".likes__list");
@@ -433,7 +446,7 @@
                                 //$.each(response, function (i, item) {
                                 //   // var $tr = $('<li>').append(item).appendTo(dvItems);
                                 //    $.fn.renderLike(item);
-                                    
+
                                 //});
                                 //for (var i = 0; i < responseObjectArray.length; i++) {
 
@@ -446,6 +459,8 @@
                                 alert(response);
                             }
                         });
+
+                        console.log("end of addlike");
                             return newLike;
 
 
@@ -477,21 +492,144 @@
 
                     };
 
+                    $.fn.deleteLike = function (likeFound) {
+                        console.log("entered delete like");
+                        $.ajax({
+                            type: "POST",
+                            url: "/Index?handler=DeleteLiked",
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("XSRF-TOKEN",
+                                    $('input:hidden[name="__RequestVerificationToken"]').val());
+                            },
+                            data: JSON.stringify(likeFound),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                               // console.log(response);
+                                var responseObjectArray = JSON.parse(response);
+                               // console.log(responseObjectArray);
+                               // console.log("inside addlike");
+                                // var dvItems = $(".likes__list");
+                                //dvItems.empty();
+                                //$.each(response, function (i, item) {
+                                //   // var $tr = $('<li>').append(item).appendTo(dvItems);
+                                //    $.fn.renderLike(item);
+
+                                //});
+                                $(".likes__list").empty();
+                                for (var i = 0; i < responseObjectArray.length; i++) {
+
+                                    $.fn.renderLike(responseObjectArray[i]);
+                                }
+
+                               // $.fn.renderLike(responseObjectArray[responseObjectArray.length - 1]);
+                            },
+                            failure: function (response) {
+                                //alert(response);
+                            }
+                        });
+
+
+
+                    };
+
 
 
                     $(document).ready(function () {
 
-                        var likes = [];
+                        var likesIdArray = [];
                         //var recipe = ;
                         //console.log(recipe.RecipeId);
 
                         //$.fn.toggleLikeBtn(isLiked);
                         $(".recipe__love").click(function () {
+
+
+
+
                             isLiked = !isLiked;
-                            var newLike = $.fn.addLike();
-                            likes.push(newLike);
+
+                                @*@{
+
+
+
+                                    var alreadyLiked = false;
+                                    var recipeId = Model.Recipe.RecipeId;
+                                    <text>console.log("inside razor js");</text>;
+                                    <text>console.log(@likedRecipes);</text>;
+
+                                    @if (likedRecipes != null)
+                                    {
+                                        <text>console.log("inside liked recipes not null");</text>
+                                        foreach (var recipe in likedRecipes)
+                                        {
+                                            if (recipe["id"].Equals(recipeId))
+                                            {
+                                                alreadyLiked = true;
+
+
+                                            }
+
+                                        }
+                                    }
+                                    if (!alreadyLiked)
+                                    {
+
+                                   <text>
+                            console.log("gonna add new like");
+
+                                   </text>
+
+
+                                    }
+
+
+
+
+
+                                 }*@
+
+
 
                             //console.log(recipe);
+                            //call ajax to check if recipe already liked
+                            $.ajax({
+                                type: "GET",
+                                url: "/Index?handler=Liked",
+                                data: {"recipeId" : `@Model.Recipe.RecipeId` },
+                                contentType: "application/x-www-form-urlencoded",
+                                dataType: "json",
+                                success: function (response) {
+                                    console.log(response);
+
+                                    if (response == "false") {
+                                        var newLike = $.fn.addLike();
+                                        likesIdArray.push(newLike.id);
+
+                                    } else {
+
+                                        $.fn.deleteLike(JSON.parse(response));
+                                    }
+                                    //var dvItems = $("#dvItems");
+                                    //dvItems.empty();
+                                    //$.each(response, function (i, item) {
+                                    //    var $tr = $('<li>').append(item).appendTo(dvItems);
+                                   // });
+                                },
+                                failure: function (response) {
+                                    alert(response);
+                                }
+                            });
+                           @*var likeFound = likesArray.find(like => like.id == `@Model.Recipe.RecipeId`);
+                            if (likeFound) {
+                                $.fn.deleteLike(likeFound);
+
+                            } else {
+
+                                var newLike = $.fn.addLike();
+                                likesIdArray.push(newLike.id);
+                            }*@
+
 
                             $.fn.toggleLikeBtn(isLiked);
                            // $.fn.renderLike(newLike);
@@ -527,7 +665,7 @@
                     })
 
 
-            </script>
+                </script>
         }
 
 
