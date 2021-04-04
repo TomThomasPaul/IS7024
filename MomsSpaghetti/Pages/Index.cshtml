@@ -225,15 +225,31 @@
 
                                 @foreach (var ingredient in Model.Recipe.Ingredients)
                                 {
+                                    @*<li class="recipe__item">
+                    <svg class="recipe__icon">
+                        <use href="img/icons.svg#icon-check"></use>
+                    </svg>
+                    <div class="recipe__count">2</div>
+                    <div class="recipe__ingredient">
+                        <span class="recipe__unit">g</span>
+                        pizza
+                    </div>
+                </li>*@
                                     <li class="recipe__item">
                                         <svg class="recipe__icon">
                                             <use href="img/icons.svg#icon-check"></use>
                                         </svg>
-                                        <div class="recipe__count">2</div>
                                         <div class="recipe__ingredient">
-                                            <span class="recipe__unit">g</span>
-                                            pizza
+                                            <p>@ingredient.ToString()</p>
+
                                         </div>
+                                        @*
+                      <div class="recipe__count">2</div>
+                    <div class="recipe__ingredient">
+                        <span class="recipe__unit">g</span>
+                        pizza
+                    </div>
+                                        *@
                                     </li>
 
                                 }
@@ -537,6 +553,19 @@
 
 
                     $(document).ready(function () {
+                        //validate empty search
+                        $(".search__btn").click(function (event) {
+
+                            if ($(".search__field").val() == "") {
+
+                                alert("Enter a value in the Search Field");
+
+
+                                event.preventDefault();
+
+
+                            }
+                        });
 
                         var likesIdArray = [];
                         //var recipe = ;
