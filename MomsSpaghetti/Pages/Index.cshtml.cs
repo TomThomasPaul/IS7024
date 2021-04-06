@@ -34,17 +34,22 @@ namespace MomsSpaghetti.Pages
         public Like Like { get; set; }
 
         [BindProperty(SupportsGet = true)]
-        public String recipeId { get; set; }
+        public string RecipeId { get; set; }
 
         public IndexModel(ILogger<IndexModel> logger, IMemoryCache cache)
         {
             _logger = logger;
             _cache = cache;
         }
-
+        //Gets the Search Details from the User
         public async Task<IActionResult> OnGet()
         {
+            if (_cache.Get("searchRecipeResults") == null)
+            {
 
+                return Page();
+
+            }
 
             if (_cache.Get("searchRecipeResults") != null)
             {
@@ -56,9 +61,9 @@ namespace MomsSpaghetti.Pages
 
             }
 
-            if (recipeId != null)
+            if (RecipeId != null)
             {
-                String recipeDetails = "";
+                string recipeDetails = "";
                 // var recipeObject = new { };
                 try
                 {
@@ -66,7 +71,7 @@ namespace MomsSpaghetti.Pages
 
                     // client.DefaultRequestHeaders.Add("q", UserInput);
 
-                    HttpResponseMessage response = await client.GetAsync("https://forkify-api.herokuapp.com/api/get?rId=" + recipeId);
+                    HttpResponseMessage response = await client.GetAsync("https://forkify-api.herokuapp.com/api/get?rId=" + RecipeId);
 
 
                     var temp = response;
@@ -82,7 +87,7 @@ namespace MomsSpaghetti.Pages
                         if (jsonObject.IsValid(schema, out validationEvents))
                         {
 
-                            Recipe.RecipeId = recipeId;
+                            Recipe.RecipeId = RecipeId;
                             Recipe.Title = jsonObject["recipe"]["title"].ToString();
                             Recipe.Image = jsonObject["recipe"]["image_url"].ToString();
                             Recipe.Author = jsonObject["recipe"]["publisher"].ToString();
@@ -120,9 +125,9 @@ namespace MomsSpaghetti.Pages
                   
 
                 }
-                catch (Exception err)
+                catch 
                 {
-                    //return RedirectToPage("Error", err.Message);
+                    return Page();
 
                 }
 
@@ -136,14 +141,14 @@ namespace MomsSpaghetti.Pages
 
             return Page();
         }
-
+//Add to Favorites
         public ActionResult OnGetLiked()
         {
             var response = "false";
-            var recipeId =Request.Query["recipeId"];
+            var RecipeId =Request.Query["recipeId"];
             var cachedResult = _cache.Get<List<JObject>>("LikedRecipes");
             if (cachedResult != null) {
-                var item = cachedResult.SingleOrDefault(x => x["id"].ToString().Equals(recipeId));
+                var item = cachedResult.SingleOrDefault(x => x["id"].ToString().Equals(RecipeId));
                 if (item != null)
                 {
                     var itemJSON = JsonConvert.SerializeObject(item);
@@ -165,7 +170,7 @@ namespace MomsSpaghetti.Pages
 
 
             // JObject returnTemp = null;
-            var likedRecipes = new List<JObject>();
+            var LikedRecipes = new List<JObject>();
             string requestBody;
             string likedRecipesJSON="";
                 MemoryStream stream = new MemoryStream();
@@ -195,9 +200,9 @@ namespace MomsSpaghetti.Pages
                        
                         
                        // ViewData["LikedRecipes"] = _cache.Get<List<JObject>>("LikedRecipes");
-                       likedRecipes = _cache.Get<List<JObject>>("LikedRecipes");
+                       LikedRecipes = _cache.Get<List<JObject>>("LikedRecipes");
                         
-                        likedRecipesJSON = JsonConvert.SerializeObject(likedRecipes);
+                        likedRecipesJSON = JsonConvert.SerializeObject(LikedRecipes);
                         // returnTemp = temp;
                         //foreach (var recipe in temp)
                         //{
@@ -214,7 +219,7 @@ namespace MomsSpaghetti.Pages
             
             return new JsonResult(likedRecipesJSON);
         }
-
+//Deletes a recipe from Favorites
 
         public ActionResult OnPostDeleteLiked()
         {
@@ -222,13 +227,14 @@ namespace MomsSpaghetti.Pages
 
             // JObject returnTemp = null;
             //var likedRecipes = new List<JObject>();
-            string requestBody;
+            
             string objJSON = "";
             MemoryStream stream = new MemoryStream();
             Request.Body.CopyTo(stream);
             stream.Position = 0;
             using (StreamReader reader = new StreamReader(stream))
             {
+                string requestBody;
                 requestBody = reader.ReadToEnd();
                 if (requestBody.Length > 0)
                 {
@@ -240,8 +246,7 @@ namespace MomsSpaghetti.Pages
                         // var cachedResult = _cache.Get<List<JObject>>("LikedRecipes");
                         Console.WriteLine(Like.Likes);
                         Like.Likes = _cache.Get<List<JObject>>("LikedRecipes");
-                        var item = Like.Likes.SingleOrDefault(x => x["id"].ToString().Equals(obj["id"].ToString()));
-                        Like.Likes.Remove(item);
+                        Like.Likes.Remove(Like.Likes.SingleOrDefault(x => x["id"].ToString().Equals(obj["id"].ToString())));
                         Console.WriteLine(Like.Likes);
                         _cache.Set<List<JObject>>("LikedRecipes", Like.Likes);
                        objJSON = JsonConvert.SerializeObject(Like.Likes);
@@ -260,8 +265,8 @@ namespace MomsSpaghetti.Pages
     
         public async Task<IActionResult>  OnPost()
         {   
-            String responseContent="";
-            var responseObject = new { };
+            string ResponseContent="";
+            var ResponseObject = new { };
             if (SearchRecipes.Query.Length != 0)
             {
                 
@@ -275,8 +280,8 @@ namespace MomsSpaghetti.Pages
 
                     if (response.IsSuccessStatusCode)
                     {
-                       responseContent = await response.Content.ReadAsStringAsync();
-                        JObject jsonObject = JObject.Parse(responseContent);
+                       ResponseContent = await response.Content.ReadAsStringAsync();
+                        JObject jsonObject = JObject.Parse(ResponseContent);
                         //TempData["searchResultsString"] = responseContent;
                         //UserSearch SearchRecipes = new UserSearch();
                         SearchRecipes.Result = jsonObject;
