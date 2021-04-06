@@ -7,7 +7,7 @@ namespace MomsSpaghetti.Models
 {
     public class UserSearch
     {
-        public String Query { get; set; }
+        public string Query { get; set; }
 
         public  JObject Result { get; set; }
 

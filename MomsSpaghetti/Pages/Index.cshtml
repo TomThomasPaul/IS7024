@@ -53,8 +53,10 @@
                         </svg>
                         <span>Search</span>
                     </button>
-
+                
                 </form>
+                </div>
+        
 
                 <div class="likes">
                     <div class="likes__field">
@@ -62,48 +64,43 @@
                             <use href="img/icons.svg#icon-heart"></use>
                         </svg>
                     </div>
-                    <div class="likes__panel">
-                        <ul class="likes__list">
+                    @if (likedRecipes != null)
+                    {
+                        <div class="likes__panel">
+                            <ul class="likes__list">
+                
+                                    @foreach (var recipe in likedRecipes)
+                                    {
+                                        <li>
+                                            <a class="likes__link" href="#@recipe["id"]">
+                                                <figure class="likes__fig">
+                                                    <img src="@recipe["image"]" alt="Test">
+                                                </figure>
+                                                <div class="likes__data">
+                                                    <h4 class="likes__name">@recipe["title"]</h4>
+                                                    <p class="likes__author">@recipe["author"]</p>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    }
 
-                            @if (likedRecipes != null)
-                            {
-
-                                foreach (var recipe in likedRecipes)
-                                {
-                                    <li>
-                                        <a class="likes__link" href="#@recipe["id"]">
-                                            <figure class="likes__fig">
-                                                <img src="@recipe["image"]" alt="Test">
-                                            </figure>
-                                            <div class="likes__data">
-                                                <h4 class="likes__name">@recipe["title"]</h4>
-                                                <p class="likes__author">@recipe["author"]</p>
-                                            </div>
-                                        </a>
-                                    </li>
-                                }
-
-
-                            }
-
-
-                            <!--
-                            <li>
-                                <a class="likes__link" href="#23456">
-                                    <figure class="likes__fig">
-                                        <img src="img/test-1.jpg" alt="Test">
-                                    </figure>
-                                    <div class="likes__data">
-                                        <h4 class="likes__name">Pasta with Tomato ...</h4>
-                                        <p class="likes__author">The Pioneer Woman</p>
-                                    </div>
-                                </a>
-                            </li>
-                            -->
-                        </ul>
-                    </div>
-                </div>
-            </header>
+                                </ul>
+                            </div>
+                    }
+                                <!--
+                <li>
+                    <a class="likes__link" href="#23456">
+                        <figure class="likes__fig">
+                            <img src="img/test-1.jpg" alt="Test">
+                        </figure>
+                        <div class="likes__data">
+                            <h4 class="likes__name">Pasta with Tomato ...</h4>
+                            <p class="likes__author">The Pioneer Woman</p>
+                        </div>
+                    </a>
+                </li>
+                -->
+                  
 
 
             <div class="results">
@@ -128,7 +125,7 @@
                                 <li>
                                     <a class="results__link results__link--active" href="?recipeId=@recipe["recipe_id"]">
                                         <figure class="results__fig">
-                                            <img src="@recipe["image_url"]" alt="Test">
+                                            <img src="@recipe["image_url"]" alt="Recipe">
                                         </figure>
                                         <div class="results__data">
                                             <h4 class="results__name">@recipe["title"]</h4>
@@ -229,9 +226,9 @@
                                         <svg class="recipe__icon">
                                             <use href="img/icons.svg#icon-check"></use>
                                         </svg>
-                                        <div class="recipe__count">2</div>
+                                        <div class="recipe__count"></div>
                                         <div class="recipe__ingredient">
-                                            <span class="recipe__unit">g</span>
+                                            <span class="recipe__unit"></span>
                                             pizza
                                         </div>
                                     </li>

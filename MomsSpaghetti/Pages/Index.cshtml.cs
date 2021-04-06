@@ -34,7 +34,7 @@ namespace MomsSpaghetti.Pages
         public Like Like { get; set; }
 
         [BindProperty(SupportsGet = true)]
-        public String recipeId { get; set; }
+        public string RecipeId { get; set; }
 
         public IndexModel(ILogger<IndexModel> logger, IMemoryCache cache)
         {
@@ -42,8 +42,14 @@ namespace MomsSpaghetti.Pages
             _cache = cache;
         }
 
+
         public async Task<IActionResult> OnGet()
         {
+            //Runs when the page is loaded for the first time when the searchRecepients doesn't have a value
+            if (_cache.Get("searchRecipeResults") == null)
+            {
+                return Page();
+            }
 
 
             if (_cache.Get("searchRecipeResults") != null)
@@ -55,10 +61,10 @@ namespace MomsSpaghetti.Pages
                 SearchRecipes.Result = cachedResult;
 
             }
-
-            if (recipeId != null)
+            //Loads the Recipe that selected 
+            if (RecipeId != null)
             {
-                String recipeDetails = "";
+                string recipeDetails = "";
                 // var recipeObject = new { };
                 try
                 {
@@ -66,7 +72,7 @@ namespace MomsSpaghetti.Pages
 
                     // client.DefaultRequestHeaders.Add("q", UserInput);
 
-                    HttpResponseMessage response = await client.GetAsync("https://forkify-api.herokuapp.com/api/get?rId=" + recipeId);
+                    HttpResponseMessage response = await client.GetAsync("https://forkify-api.herokuapp.com/api/get?rId=" + RecipeId);
 
 
                     var temp = response;
@@ -82,7 +88,7 @@ namespace MomsSpaghetti.Pages
                         if (jsonObject.IsValid(schema, out validationEvents))
                         {
 
-                            Recipe.RecipeId = recipeId;
+                            Recipe.RecipeId = RecipeId;
                             Recipe.Title = jsonObject["recipe"]["title"].ToString();
                             Recipe.Image = jsonObject["recipe"]["image_url"].ToString();
                             Recipe.Author = jsonObject["recipe"]["publisher"].ToString();
@@ -104,7 +110,6 @@ namespace MomsSpaghetti.Pages
                         }
 
 
-
                         else
                         {
                             foreach (string evt in validationEvents)
@@ -120,10 +125,10 @@ namespace MomsSpaghetti.Pages
                   
 
                 }
-                catch (Exception err)
+                catch
                 {
-                    //return RedirectToPage("Error", err.Message);
-
+                   
+                    return Page();
                 }
 
             }
@@ -215,7 +220,7 @@ namespace MomsSpaghetti.Pages
             return new JsonResult(likedRecipesJSON);
         }
 
-
+        //Removes a recipe from Favorites
         public ActionResult OnPostDeleteLiked()
         {
 
@@ -240,8 +245,8 @@ namespace MomsSpaghetti.Pages
                         // var cachedResult = _cache.Get<List<JObject>>("LikedRecipes");
                         Console.WriteLine(Like.Likes);
                         Like.Likes = _cache.Get<List<JObject>>("LikedRecipes");
-                        var item = Like.Likes.SingleOrDefault(x => x["id"].ToString().Equals(obj["id"].ToString()));
-                        Like.Likes.Remove(item);
+                        
+                        Like.Likes.Remove(Like.Likes.SingleOrDefault(x => x["id"].ToString().Equals(obj["id"].ToString())));
                         Console.WriteLine(Like.Likes);
                         _cache.Set<List<JObject>>("LikedRecipes", Like.Likes);
                        objJSON = JsonConvert.SerializeObject(Like.Likes);
@@ -257,10 +262,10 @@ namespace MomsSpaghetti.Pages
         }
 
 
-    
+        //User searches for a recipe
         public async Task<IActionResult>  OnPost()
         {   
-            String responseContent="";
+            string responseContent="";
             var responseObject = new { };
             if (SearchRecipes.Query.Length != 0)
             {
@@ -310,7 +315,8 @@ namespace MomsSpaghetti.Pages
 
             // return RedirectToPage("/ResultsPage", new { result = SearchRecipes.Result }) ;
             //return Content(responseContent);
-            if (_cache.Get<List<JObject>>("LikedRecipes") != null)
+
+          if (_cache.Get<List<JObject>>("LikedRecipes") != null)
             {
                 ViewData["LikedRecipes"] = _cache.Get<List<JObject>>("LikedRecipes");
 
