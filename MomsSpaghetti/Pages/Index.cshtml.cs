@@ -64,7 +64,7 @@ namespace MomsSpaghetti.Pages
             //Loads the Recipe that selected 
             if (RecipeId != null)
             {
-                string recipeDetails = "";
+                string RecipeDetails = "";
                 // var recipeObject = new { };
                 try
                 {
@@ -81,8 +81,8 @@ namespace MomsSpaghetti.Pages
 
                     {
 
-                        recipeDetails = await response.Content.ReadAsStringAsync();
-                        JObject jsonObject = JObject.Parse(recipeDetails);
+                        RecipeDetails = await response.Content.ReadAsStringAsync();
+                        JObject jsonObject = JObject.Parse(RecipeDetails);
                         JSchema schema = JSchema.Parse(System.IO.File.ReadAllText("Recipeschema.json"));
                         IList<string> validationEvents = new List<string>();
                         if (jsonObject.IsValid(schema, out validationEvents))
@@ -170,7 +170,7 @@ namespace MomsSpaghetti.Pages
 
 
             // JObject returnTemp = null;
-            var likedRecipes = new List<JObject>();
+            var LikedRecipes = new List<JObject>();
             string requestBody;
             string likedRecipesJSON="";
                 MemoryStream stream = new MemoryStream();
@@ -200,9 +200,9 @@ namespace MomsSpaghetti.Pages
                        
                         
                        // ViewData["LikedRecipes"] = _cache.Get<List<JObject>>("LikedRecipes");
-                       likedRecipes = _cache.Get<List<JObject>>("LikedRecipes");
+                       LikedRecipes = _cache.Get<List<JObject>>("LikedRecipes");
                         
-                        likedRecipesJSON = JsonConvert.SerializeObject(likedRecipes);
+                        likedRecipesJSON = JsonConvert.SerializeObject(LikedRecipes);
                         // returnTemp = temp;
                         //foreach (var recipe in temp)
                         //{
@@ -265,8 +265,8 @@ namespace MomsSpaghetti.Pages
         //User searches for a recipe
         public async Task<IActionResult>  OnPost()
         {   
-            string responseContent="";
-            var responseObject = new { };
+            string ResponseContent="";
+            var ResponseObject = new { };
             if (SearchRecipes.Query.Length != 0)
             {
                 
@@ -280,8 +280,8 @@ namespace MomsSpaghetti.Pages
 
                     if (response.IsSuccessStatusCode)
                     {
-                       responseContent = await response.Content.ReadAsStringAsync();
-                        JObject jsonObject = JObject.Parse(responseContent);
+                       ResponseContent = await response.Content.ReadAsStringAsync();
+                        JObject jsonObject = JObject.Parse(ResponseContent);
                         //TempData["searchResultsString"] = responseContent;
                         //UserSearch SearchRecipes = new UserSearch();
                         SearchRecipes.Result = jsonObject;
