@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/WelcomeElement"
+  },
+  "definitions": {
+    "WelcomeElement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "recipe": {
+          "$ref": "#/definitions/Recipe"
+        }
+      },
+      "required": [
+        "recipe"
+      ],
+      "title": "WelcomeElement"
+    },
+    "Recipe": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "publisher": {
+          "type": "string"
+        },
+        "ingredients": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_url": {
+          "type": "string",
+          "format": "uri",
+          "qt-uri-protocols": [
+            "http"
+          ]
+        },
+        "recipe_id": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string",
+          "format": "uri",
+          "qt-uri-protocols": [
+            "http"
+          ],
+          "qt-uri-extensions": [
+            ".jpg"
+          ]
+        },
+        "social_rank": {
+          "type": "number"
+        },
+        "publisher_url": {
+          "type": "string",
+          "format": "uri",
+          "qt-uri-protocols": [
+            "http"
+          ]
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "image_url",
+        "ingredients",
+        "publisher",
+        "publisher_url",
+        "recipe_id",
+        "social_rank",
+        "source_url",
+        "title"
+      ],
+      "title": "Recipe"
+    }
+  }
+}

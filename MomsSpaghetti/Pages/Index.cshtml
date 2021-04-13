@@ -44,7 +44,7 @@
     <body>
         <div class="_container">
             <header class="header">
-                <img src="img/logo.png" alt="Logo" class="header__logo">
+                <img src="~/img/logo_transparent.png" alt="Logo" class="header__logo">
                 <form class="search" method="post">
                     <input type="text" class="search__field" asp-for="SearchRecipes.Query" placeholder="Search over 1,000,000 recipes...">
                     <button class="btn search__btn" type="submit">
@@ -62,13 +62,14 @@
                             <use href="img/icons.svg#icon-heart"></use>
                         </svg>
                     </div>
+
                     <div class="likes__panel">
                         <ul class="likes__list">
-
                             @if (likedRecipes != null)
                             {
 
-                                foreach (var recipe in likedRecipes)
+
+                                @foreach (var recipe in likedRecipes)
                                 {
                                     <li>
                                         <a class="likes__link" href="#@recipe["id"]">
@@ -84,46 +85,29 @@
                                 }
 
 
+
+
                             }
 
-
-                            <!--
-                            <li>
-                                <a class="likes__link" href="#23456">
-                                    <figure class="likes__fig">
-                                        <img src="img/test-1.jpg" alt="Test">
-                                    </figure>
-                                    <div class="likes__data">
-                                        <h4 class="likes__name">Pasta with Tomato ...</h4>
-                                        <p class="likes__author">The Pioneer Woman</p>
-                                    </div>
-                                </a>
-                            </li>
-                            -->
                         </ul>
                     </div>
+
                 </div>
             </header>
 
 
             <div class="results">
-                <ul class="results__list">
 
-                    @{if (Model.SearchRecipes.Result != null)
-                        {
+                @{if (Model.SearchRecipes.Result != null)
+                    {
+                        int count = 0;
+                        <ul class="results__list">
 
 
-                            @*
 
-                                    var props = Model.SearchRecipes.Result.Properties();
-                                    var propsArray = props.ToArray();
-                                    var first = propsArray[1].Value[0]["title"];
 
-                                <h1>@Model.SearchRecipes.Result["recipes"][0]["title"]</h1>
-                                <h1>@Model.SearchRecipes.Result["recipes"][1]["title"]</h1>
-                            *@
 
-                            foreach (var recipe in Model.SearchRecipes.Result["recipes"])
+                            @foreach (var recipe in Model.SearchRecipes.Result["recipes"])
                             {
                                 <li>
                                     <a class="results__link results__link--active" href="?recipeId=@recipe["recipe_id"]">
@@ -132,113 +116,18 @@
                                         </figure>
                                         <div class="results__data">
                                             <h4 class="results__name">@recipe["title"]</h4>
-                                            <p class="results__author">@recipe["author"]</p>
+                                            <p class="results__author">@recipe["publisher"]</p>
                                         </div>
                                     </a>
                                 </li>
+
+                                count++;
+                                if (count == 10) break;
                             }
 
 
-                        }
 
 
-                    }
-
-                </ul>
-
-
-                <div class="results__pages">
-                    <!--
-                    <button class="btn-inline results__btn--prev">
-                        <svg class="search__icon">
-                            <use href="img/icons.svg#icon-triangle-left"></use>
-                        </svg>
-                        <span>Page 1</span>
-                    </button>
-                    <button class="btn-inline results__btn--next">
-                        <span>Page 3</span>
-                        <svg class="search__icon">
-                            <use href="img/icons.svg#icon-triangle-right"></use>
-                        </svg>
-                    </button>
-                    -->
-                </div>
-            </div>
-
-            <div class="recipe">
-                @if (Model.Recipe.Title != null)
-                {
-
-
-
-
-
-
-                    <figure class="recipe__fig">
-                        <img src="@Model.Recipe.Image" alt="@Model.Recipe.Image" class="recipe__img">
-                        <h1 class="recipe__title">
-                            <span>@Model.Recipe.Title</span>
-                        </h1>
-                    </figure>
-                    <div class="recipe__details">
-                        <div class="recipe__info">
-                            <svg class="recipe__info-icon">
-                                <use href="img/icons.svg#icon-stopwatch"></use>
-                            </svg>
-                            <span class="recipe__info-data recipe__info-data--minutes">45</span>
-                            <span class="recipe__info-text"> minutes</span>
-                        </div>
-                        <div class="recipe__info">
-                            <svg class="recipe__info-icon">
-                                <use href="img/icons.svg#icon-man"></use>
-                            </svg>
-                            <span class="recipe__info-data recipe__info-data--people">4</span>
-                            <span class="recipe__info-text"> servings</span>
-
-                            <div class="recipe__info-buttons">
-                                <button class="btn-tiny">
-                                    <svg>
-                                        <use href="img/icons.svg#icon-circle-with-minus"></use>
-                                    </svg>
-                                </button>
-                                <button class="btn-tiny">
-                                    <svg>
-                                        <use href="img/icons.svg#icon-circle-with-plus"></use>
-                                    </svg>
-                                </button>
-                            </div>
-
-                        </div>
-
-                        <button class="recipe__love">
-                            <svg class="header__likes">
-                                <use href="img/icons.svg#@iconString"></use>
-                            </svg>
-                        </button>
-                    </div>
-
-
-                    <div class="recipe__ingredients">
-                        <ul class="recipe__ingredient-list">
-                            @if (Model.Recipe.Ingredients != null)
-                            {
-
-                                @foreach (var ingredient in Model.Recipe.Ingredients)
-                                {
-                                    <li class="recipe__item">
-                                        <svg class="recipe__icon">
-                                            <use href="img/icons.svg#icon-check"></use>
-                                        </svg>
-                                        <div class="recipe__count">2</div>
-                                        <div class="recipe__ingredient">
-                                            <span class="recipe__unit">g</span>
-                                            pizza
-                                        </div>
-                                    </li>
-
-                                }
-
-                            }
 
 
 
@@ -246,57 +135,161 @@
 
                         </ul>
 
+                        <div class="results__pages">
+
+                            <button class="btn-inline results__btn--prev">
+                                <svg class="search__icon">
+                                    <use href="img/icons.svg#icon-triangle-left"></use>
+                                </svg>
+                                <span>Page 1</span>
+                            </button>
+                            <button class="btn-inline results__btn--next">
+                                <span>Page 2</span>
+                                <svg class="search__icon">
+                                    <use href="img/icons.svg#icon-triangle-right"></use>
+                                </svg>
+                            </button>
+
+                        </div>
+
+                        }
+                    }
 
 
-
-                        <button class="btn-small recipe__btn">
-                            <svg class="search__icon">
-                                <use href="img/icons.svg#icon-shopping-cart"></use>
-                            </svg>
-                            <span>Add to shopping list</span>
-                        </button>
                     </div>
 
-                    <div class="recipe__directions">
-                        <h2 class="heading-2">How to cook it</h2>
-                        <p class="recipe__directions-text">
-                            This recipe was carefully designed and tested by
-                            <span class="recipe__by">@Model.Recipe.Author</span>. Please check out directions at their website.
-                        </p>
-                        <a class="btn-small recipe__btn" href="@Model.Recipe.Url" target="_blank">
-                            <span>Directions</span>
-                            <svg class="search__icon">
-                                <use href="img/icons.svg#icon-triangle-right"></use>
-                            </svg>
+                    <div class="recipe">
+                        @if (Model.Recipe.Title != null)
+                        {
 
-                        </a>
+
+
+
+
+
+                            <figure class="recipe__fig">
+                                <img src="@Model.Recipe.Image" alt="@Model.Recipe.Image" class="recipe__img">
+                                <h1 class="recipe__title">
+                                    <span>@Model.Recipe.Title</span>
+                                </h1>
+                            </figure>
+                            <div class="recipe__details">
+                                <div class="recipe__info">
+                                    <svg class="recipe__info-icon">
+                                        <use href="img/icons.svg#icon-stopwatch"></use>
+                                    </svg>
+                                    <span class="recipe__info-data recipe__info-data--minutes">@Model.Recipe.CookingTime</span>
+                                    <span class="recipe__info-text"> minutes</span>
+                                </div>
+                                <div class="recipe__info">
+                                    <svg class="recipe__info-icon">
+                                        <use href="img/icons.svg#icon-man"></use>
+                                    </svg>
+                                    <span class="recipe__info-data recipe__info-data--people">4</span>
+                                    <span class="recipe__info-text"> servings</span>
+
+                                    <div class="recipe__info-buttons">
+                                        <button class="btn-tiny btn-decrease">
+                                            <svg>
+                                                <use href="img/icons.svg#icon-circle-with-minus"></use>
+                                            </svg>
+                                        </button>
+                                        <button class="btn-tiny btn-increase">
+                                            <svg>
+                                                <use href="img/icons.svg#icon-circle-with-plus"></use>
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                                <button class="recipe__love">
+                                    <svg class="header__likes">
+                                        <use href="img/icons.svg#@iconString"></use>
+                                    </svg>
+                                </button>
+                            </div>
+
+
+                            <div class="recipe__ingredients">
+                                <ul class="recipe__ingredient-list">
+                                    @if (Model.Recipe.Ingredients != null)
+                                    {
+
+                                        @foreach (var ingredient in Model.Recipe.Ingredients)
+                                        {
+                                            <li class="recipe__item">
+                                                <svg class="recipe__icon">
+                                                    <use href="img/icons.svg#icon-check"></use>
+                                                </svg>
+                                                <div class="recipe__ingredient">
+                                                    <p>@ingredient.ToString()</p>
+
+                                                </div>
+
+                                            </li>
+
+                                        }
+
+                                    }
+
+
+
+
+
+                                </ul>
+
+
+
+
+                                <button class="btn-small recipe__btn">
+                                    <svg class="search__icon">
+                                        <use href="img/icons.svg#icon-shopping-cart"></use>
+                                    </svg>
+                                    <span>Add to shopping list</span>
+                                </button>
+                            </div>
+
+                            <div class="recipe__directions">
+                                <h2 class="heading-2">How to cook it</h2>
+                                <p class="recipe__directions-text">
+                                    This recipe was carefully designed and tested by
+                                    <span class="recipe__by">@Model.Recipe.Author</span>. Please check out directions at their website.
+                                </p>
+                                <a class="btn-small recipe__btn" href="@Model.Recipe.Url" target="_blank">
+                                    <span>Directions</span>
+                                    <svg class="search__icon">
+                                        <use href="img/icons.svg#icon-triangle-right"></use>
+                                    </svg>
+
+                                </a>
+                            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        }
+
+
                     </div>
 
 
 
+                    <div class="shopping">
+                        <h2 class="heading-2">My Shopping List</h2>
 
+                        <ul class="shopping__list">
 
-
-
-
-
-
-
-
-
-                }
-
-
-            </div>
-
-
-
-            <div class="shopping">
-                <h2 class="heading-2">My Shopping List</h2>
-
-                <ul class="shopping__list">
-
-                    <!--
+                            <!--
                     <li class="shopping__item">
                         <div class="shopping__count">
                             <input type="number" value="500" step="100">
@@ -376,15 +369,15 @@
                         </button>
                     </li>
                     -->
-                </ul>
+                        </ul>
 
-                <div class="copyright">
-                    &copy; MomsSpaghetti
+                        <div class="copyright">
+                            &copy; MomsSpaghetti
 
+                        </div>
+
+                    </div>
                 </div>
-
-            </div>
-        </div>
 
 
 
@@ -392,9 +385,8 @@
 
 
                 <script>
-                    var isLiked = false;
-                    var likesArray = [];
-                       //
+
+
 
                     $.fn.toggleLikeBtn = function (isLiked) {
                         let iconString = isLiked ? 'icon-heart' : 'icon-heart-outlined';
@@ -421,10 +413,6 @@
 
                         }
 
-                            //var newLike = `@Model.Recipe`;
-                           // console.log(newLike);
-                          // likes[likes.length] = newLike;
-                            //console.log(likes);
                         $.ajax({
                             type: "POST",
                             url: "/Index?handler=Send",
@@ -438,20 +426,9 @@
                             success: function (response) {
                                 console.log(response);
                                 var responseObjectArray = JSON.parse(response);
-                                likesArray = responseObjectArray;
+                               // likesArray = responseObjectArray;
                                 console.log(responseObjectArray);
                                 console.log("inside addlike");
-                               // var dvItems = $(".likes__list");
-                                //dvItems.empty();
-                                //$.each(response, function (i, item) {
-                                //   // var $tr = $('<li>').append(item).appendTo(dvItems);
-                                //    $.fn.renderLike(item);
-
-                                //});
-                                //for (var i = 0; i < responseObjectArray.length; i++) {
-
-                                //    $.fn.renderLike(responseObjectArray[i]);
-                                //}
 
                                 $.fn.renderLike(responseObjectArray[responseObjectArray.length - 1]);
                                 $.fn.toggleLikeBtn(true);
@@ -489,7 +466,7 @@
 
 
                         $(".likes__list").append(markup);
-                       // alert("inside render like");
+
 
                     };
 
@@ -506,27 +483,21 @@
                             contentType: "application/json; charset=utf-8",
                             dataType: "json",
                             success: function (response) {
-                               // console.log(response);
-                                var responseObjectArray = JSON.parse(response);
-                               // console.log(responseObjectArray);
-                               // console.log("inside addlike");
-                                // var dvItems = $(".likes__list");
-                                //dvItems.empty();
-                                //$.each(response, function (i, item) {
-                                //   // var $tr = $('<li>').append(item).appendTo(dvItems);
-                                //    $.fn.renderLike(item);
 
-                                //});
+                                var responseObjectArray = JSON.parse(response);
+
+
+
                                 $(".likes__list").empty();
                                 for (var i = 0; i < responseObjectArray.length; i++) {
 
                                     $.fn.renderLike(responseObjectArray[i]);
                                 }
                                 $.fn.toggleLikeBtn(false);
-                               // $.fn.renderLike(responseObjectArray[responseObjectArray.length - 1]);
+
                             },
                             failure: function (response) {
-                                //alert(response);
+
                             }
                         });
 
@@ -535,64 +506,170 @@
                     };
 
 
+                    $.fn.updateServings = function (action) {
+                        //console.log("Clicked decrease");
+                        let servingsInit = $(".recipe__info-data--people").text();
+                        let servingsNew = 0;
+                        
+                        servingsInit = parseFloat(servingsInit);
+                        if (action == "decrease") {
+                            servingsNew = servingsInit - 1;
+                        } else {
+
+                            servingsNew = servingsInit + 1;
+                        }
+
+                        $(".recipe__info-data--people").text(servingsNew.toString());
+                        let first = 0;
+                        let second = 0;
+                        let sum = 0;
+                       
+                       // console.log(servings);
+
+                        let ingredients = Array.from($(".recipe__ingredient-list").children().find(".recipe__ingredient"));
+                        let fracArr = [["1/4", 0.25], ["1/3", 0.3], ["1/2",0.5], ["3/4",0.75]];
+
+                      let updatedIngredients=  ingredients.map(ing => {
+                           // console.log(ing.innerText);
+                          let ingArr = ing.innerText.toString().split(" ");
+                         // console.log(ingArr);
+                          if ( (parseFloat(ingArr[0]))!==NaN) {
+                              first = servingsNew / servingsInit * parseFloat(ingArr[0]);
+                              console.log(ingArr[0]);
+                              console.log("first is " + first);
+                          }
+                          let hasFrac = false;
+                            fracArr.forEach(frac => {
+
+                                if (frac[0] == ingArr[1]) {
+                                    hasFrac = true;
+                                   // console.log(ingArr[1]);
+                                    second = servingsNew/servingsInit * frac[1];
+                                    sum = first + second;
+                                    sum = sum.toFixed(2);
+                                    console.log("sum is " + sum);
+                                    ingArr.shift();
+                                   // console.log(ingArr[0]);
+                                    ingArr[0] = sum;
+
+
+                                }
+                            })
+                          if (!hasFrac) {
+                              first = first.toFixed(2);
+                              console.log("first after fix is " + first);
+                              ingArr[0] = first;
+                          }
+                          return ingArr.join(" ");
+
+                        })
+
+
+                       // console.log(updatedIngredients);
+                        return updatedIngredients;
+
+
+                    };
+
+                    $.fn.updateIngreds = function (ingredients) {
+                        $(".recipe__ingredient-list").empty();
+                        console.log("entered render ing");
+                        
+                        ingredients.forEach(ingredient => {
+                            
+                            console.log(ingredient);
+                            $(".recipe__ingredient-list").append(`<li class="recipe__item">
+                                        <svg class="recipe__icon">
+                                            <use href="img/icons.svg#icon-check"></use>
+                                        </svg>
+                                        <div class="recipe__ingredient">
+                                            <p>${ingredient.toString()}</p>
+
+                                        </div>
+
+                                    </li>`);
+
+
+
+                        });
+
+
+
+
+                    }
+
+                    $.fn.createButton = function (page,type) {
+
+                        
+                     return `<button class="btn-inline results__btn--${type}" data-goto=${type === 'prev' ? page - 1 : page + 1}>
+                       <span>Page ${type === 'prev' ? page - 1 : page + 1}</span>
+                       <svg class="search__icon">
+                        <use href="img/icons.svg#icon-triangle-${type === 'prev' ? 'left' : 'right'}"></use>
+                       </svg>
+                    </button>`
+
+                    }
+
+                    $.fn.pagination = function (action) {
+
+                         
+                        if (action == "next") {
+
+
+                            $.fn.createButton($("."));
+
+                        }
+
+
+                    }
+
+
 
                     $(document).ready(function () {
 
-                        var likesIdArray = [];
-                        //var recipe = ;
-                        //console.log(recipe.RecipeId);
+                    //nextpage
 
-                        //$.fn.toggleLikeBtn(isLiked);
+                        $(".results__btn--next").click(function () {
+
+                            $.fn.pagination("next");
+
+
+                        });
+
+                       //update servings
+
+                        $(".btn-decrease").click(function () {
+
+                            let ingredients = $.fn.updateServings("decrease");
+                            $.fn.updateIngreds(ingredients);
+
+
+                        });
+                        $(".btn-increase").click(function () {
+
+                            let ingredients =  $.fn.updateServings("increase");
+                            $.fn.updateIngreds(ingredients);
+
+                        });
+                        //validate empty search
+                        $(".search__btn").click(function (event) {
+
+                           if ($(".search__field").val() == "") {
+
+                               alert("Enter a value in the Search Field");
+
+
+                               event.preventDefault();
+
+
+                            }
+
+                        });
+
+
                         $(".recipe__love").click(function () {
 
 
-
-
-                            isLiked = !isLiked;
-
-                                @*@{
-
-
-
-                                    var alreadyLiked = false;
-                                    var recipeId = Model.Recipe.RecipeId;
-                                    <text>console.log("inside razor js");</text>;
-                                    <text>console.log(@likedRecipes);</text>;
-
-                                    @if (likedRecipes != null)
-                                    {
-                                        <text>console.log("inside liked recipes not null");</text>
-                                        foreach (var recipe in likedRecipes)
-                                        {
-                                            if (recipe["id"].Equals(recipeId))
-                                            {
-                                                alreadyLiked = true;
-
-
-                                            }
-
-                                        }
-                                    }
-                                    if (!alreadyLiked)
-                                    {
-
-                                   <text>
-                            console.log("gonna add new like");
-
-                                   </text>
-
-
-                                    }
-
-
-
-
-
-                                 }*@
-
-
-
-                            //console.log(recipe);
                             //call ajax to check if recipe already liked
                             $.ajax({
                                 type: "GET",
@@ -605,52 +682,23 @@
 
                                     if (response == "false") {
                                         var newLike = $.fn.addLike();
-                                        likesIdArray.push(newLike.id);
+
 
                                     } else {
 
                                         $.fn.deleteLike(JSON.parse(response));
                                     }
-                                    //var dvItems = $("#dvItems");
-                                    //dvItems.empty();
-                                    //$.each(response, function (i, item) {
-                                    //    var $tr = $('<li>').append(item).appendTo(dvItems);
-                                   // });
+
                                 },
                                 failure: function (response) {
                                     alert(response);
                                 }
                             });
-                         
 
-
-                           // $.fn.toggleLikeBtn(isLiked);
-                           // $.fn.renderLike(newLike);
 
                         });
 
 
-
-
-
-                            //var person = {};
-                            //person.Name = $("#txtName").val();
-                            //$.ajax({
-                            //    type: "POST",
-                            //    url: "/Home/AjaxMethod",
-                            //    data: '{person: ' + JSON.stringify(person) + '}',
-                            //    contentType: "application/json; charset=utf-8",
-                            //    dataType: "json",
-                            //    success: function (response) {
-                            //        alert("Hello: " + response.Name + ".\nCurrent Date and Time: " + response.DateTime);
-                            //    },
-                            //    failure: function (response) {
-                            //        alert(response.responseText);
-                            //    },
-                            //    error: function (response) {
-                            //        alert(response.responseText);
-                            //    }
-                            //});
 
 
 

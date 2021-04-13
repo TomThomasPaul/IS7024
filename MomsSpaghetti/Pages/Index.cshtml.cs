@@ -15,6 +15,9 @@ using Newtonsoft.Json.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.IO;
+using System.Text.RegularExpressions;
+using System.Linq;
+using Grpc.Core;
 
 namespace MomsSpaghetti.Pages
 {
@@ -36,6 +39,10 @@ namespace MomsSpaghetti.Pages
         [BindProperty(SupportsGet = true)]
         public String recipeId { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public Boolean getMostSearched { get; set; }
+
+
         public IndexModel(ILogger<IndexModel> logger, IMemoryCache cache)
         {
             _logger = logger;
@@ -48,28 +55,50 @@ namespace MomsSpaghetti.Pages
 
             if (_cache.Get("searchRecipeResults") != null)
             {
-
-                //ViewData["recipe"] = SearchRecipes.Result["recipes"][0]["title"];
-                //var temp = TempData["searchResultsString"];
                 var cachedResult = _cache.Get<JObject>("searchRecipeResults");
                 SearchRecipes.Result = cachedResult;
+
+            }
+
+            if (getMostSearched == true)
+            {
+
+                Console.WriteLine("API hit");
+                using (StreamReader r = new StreamReader("Data_Feed.json"))
+                {
+
+                    var json = r.ReadToEnd();
+
+                    if (json != "")
+                    {
+
+                        r.Close();
+                        return Content(json);
+
+                    }
+                    else
+                    {
+                        r.Close();
+                        return new JsonResult("No visited records");
+                    }
+
+                    //result = jobj.ToString();
+                    //Console.WriteLine(result);
+                }
+
+
 
             }
 
             if (recipeId != null)
             {
                 String recipeDetails = "";
-                // var recipeObject = new { };
+               
                 try
                 {
                     HttpClient client = new HttpClient();
-
-                    // client.DefaultRequestHeaders.Add("q", UserInput);
-
+                    
                     HttpResponseMessage response = await client.GetAsync("https://forkify-api.herokuapp.com/api/get?rId=" + recipeId);
-
-
-                    var temp = response;
 
                     if (response.IsSuccessStatusCode)
 
@@ -88,18 +117,123 @@ namespace MomsSpaghetti.Pages
                             Recipe.Author = jsonObject["recipe"]["publisher"].ToString();
                             Recipe.Url = jsonObject["recipe"]["source_url"].ToString();
                             Recipe.Ingredients = jsonObject["recipe"]["ingredients"].ToArray();
+                            var i = 0;
+                            foreach (var ingredient in Recipe.Ingredients)
+                            {
+                               
+                                var ingArr = ingredient.ToString().Split(" ");
+                                if (!Regex.IsMatch(ingArr[0], @"^\d+"))
+                                {
+                                    var updatedIng = string.Join(" ", ingArr.Prepend("1"));
+
+                                    var temp = Recipe.Ingredients.GetValue(i);
+                                    var typ = temp.GetType();
+
+                                    JObject obj = new JObject(new JProperty("updatedIng", updatedIng));
+
+                                    Recipe.Ingredients.SetValue(obj["updatedIng"],i);
+                                        
+                                        //ingArr.Prepend("1").Join(" ");
+                                }
+                                i++;
+                            }
+                            Recipe.CookingTime = Recipe.Ingredients.Length * 5;
+
+                            string filepath = "Data_Feed.json";
+                            Boolean writeFile = false;
+                            //  System.IO.File.WriteAllText(filepath, recipeDetails);
+                            // var result = "";
+
+                            //set cache of reciped
+                            var mostSearched = new List<JObject>();
+                            var mostSearchedJSON = "";
+                            if (_cache.Get<List<JObject>>("mostSearched") == null)
+                            {
+                                
+                                mostSearched.Add(jsonObject);
+                                _cache.Set<List<JObject>>("mostSearched", mostSearched);
+
+                            }
+                            else
+                            {
+
+                                mostSearched = _cache.Get<List<JObject>>("mostSearched");
+
+                                if (mostSearched.SingleOrDefault(x => x["recipe"]["recipe_id"].ToString().Equals(Recipe.RecipeId)) == null)
+                                {
+                                    mostSearched.Add(jsonObject);
+
+                                }
+                                
+
+                                //  var item = cachedResult.SingleOrDefault(x => x["id"].ToString().Equals(recipeId));
+                            }
+                            
+                            mostSearchedJSON = JsonConvert.SerializeObject(mostSearched);
+
+                            using (StreamReader r = new StreamReader(filepath))
+                            {
+                                
+                                var json = r.ReadToEnd();
+                                
+                                if (json != "") {
+                                    var jobj = JArray.Parse(json);
+                                
+                                   
+                                   
+                                    // foreach (var item in jobj.Properties())
+                                    foreach (var item in jobj)
+                                        {
+                                        //item.Value = item.Value.ToString().Replace("v1", "v2");
+                                        var recId = item["recipe"]["recipe_id"];
+                                        if (!Recipe.RecipeId.Equals(item["recipe"]["recipe_id"].ToString()))
+                                        {
+                                            JObject obj = new JObject();
+                                           // var temp = mostSearched.SingleOrDefault(x => x["recipe"]["recipe_id"].ToString().Equals(Recipe.RecipeId));
 
 
-                            //UserSearch SearchRecipes = new UserSearch();
-                            // recipeObject = jsonObject;
-                            // ViewData["result"] = SearchRecipes.Result["recipes"][0]["title"];
+                                            if (mostSearched.SingleOrDefault(x => x["recipe"]["recipe_id"].ToString().Equals(Recipe.RecipeId)) == null)
+                                            {
+                                                mostSearched.Add(JObject.Parse(item.ToString()));
+                                                mostSearchedJSON = JsonConvert.SerializeObject(mostSearched);
 
-                            /*  var props = SearchRecipes.Result.Properties();
-                             var  propsArray = props.ToArray();
-                              var first = propsArray[1].Value[0]["title"];  //Upto VALUE[0] gives the first recipe object
+                                            }
+                                          
+                                            writeFile = true;
+
+                                        }
+                                    }
 
 
-                              */
+                                }
+                                else
+                                {
+                                    writeFile = true;
+                                }
+                             
+                                //result = jobj.ToString();
+                                //Console.WriteLine(result);
+                            }
+
+                            if (writeFile)
+                            {
+                               // System.IO.File.AppendAllText(filepath, ",");
+                                System.IO.File.WriteAllText(filepath, mostSearchedJSON);
+
+                            }
+
+                            //write to Jsonfile
+
+
+
+
+                            // string result = string.Empty;
+
+
+
+                            Console.WriteLine($"{mostSearched}");
+
+
 
                         }
 
@@ -112,7 +246,7 @@ namespace MomsSpaghetti.Pages
                                 Console.WriteLine(evt);
 
                             }
-                            // ViewData["result"] = new List<result>();
+                            
                         }
 
 
@@ -122,7 +256,8 @@ namespace MomsSpaghetti.Pages
                 }
                 catch (Exception err)
                 {
-                    //return RedirectToPage("Error", err.Message);
+                    
+                    Console.WriteLine(err);
 
                 }
 
@@ -162,9 +297,6 @@ namespace MomsSpaghetti.Pages
 
         public  ActionResult OnPostSend()
         {
-
-
-            // JObject returnTemp = null;
             var likedRecipes = new List<JObject>();
             string requestBody;
             string likedRecipesJSON="";
@@ -177,10 +309,10 @@ namespace MomsSpaghetti.Pages
                     if (requestBody.Length > 0)
                     {
                         var obj = JObject.Parse(requestBody);
+                        var temp = Like.Likes;
                         if (obj != null)
                         {
-                        // var temp = Like.Likes;
-                        // var  myList = new List<Object>();
+                      
                         var cachedResult = _cache.Get<List<JObject>>("LikedRecipes");
                         if (Like.Likes == null && cachedResult == null) {
                             Like.Likes = new List<JObject>();
@@ -190,22 +322,15 @@ namespace MomsSpaghetti.Pages
                         else {
                             Like.Likes = _cache.Get<List<JObject>>("LikedRecipes");
                             Like.Likes.Add(obj);
-                            _cache.Set<List<JObject>>("LikedRecipes", Like.Likes);
+                              _cache.Set<List<JObject>>("LikedRecipes", Like.Likes);
                         }
                        
                         
-                       // ViewData["LikedRecipes"] = _cache.Get<List<JObject>>("LikedRecipes");
+                      
                        likedRecipes = _cache.Get<List<JObject>>("LikedRecipes");
                         
                         likedRecipesJSON = JsonConvert.SerializeObject(likedRecipes);
-                        // returnTemp = temp;
-                        //foreach (var recipe in temp)
-                        //{
-                        //    var image = recipe["image"];
-
-                        //        }
-                        //Like.Likes.SetValue(obj, Like.Likes.Length);
-                        // Like.Likes.SetValue(obj, 0);
+          
                     }
                     }
                 }
@@ -218,10 +343,6 @@ namespace MomsSpaghetti.Pages
 
         public ActionResult OnPostDeleteLiked()
         {
-
-
-            // JObject returnTemp = null;
-            //var likedRecipes = new List<JObject>();
             string requestBody;
             string objJSON = "";
             MemoryStream stream = new MemoryStream();
@@ -235,9 +356,7 @@ namespace MomsSpaghetti.Pages
                     var obj = JObject.Parse(requestBody);
                     if (obj != null)
                     {
-                        // var temp = Like.Likes;
-                        // var  myList = new List<Object>();
-                        // var cachedResult = _cache.Get<List<JObject>>("LikedRecipes");
+          
                         Console.WriteLine(Like.Likes);
                         Like.Likes = _cache.Get<List<JObject>>("LikedRecipes");
                         var item = Like.Likes.SingleOrDefault(x => x["id"].ToString().Equals(obj["id"].ToString()));
@@ -262,14 +381,12 @@ namespace MomsSpaghetti.Pages
         {   
             String responseContent="";
             var responseObject = new { };
-            if (SearchRecipes.Query.Length != 0)
+             if (SearchRecipes.Query.Length != 0)
             {
                 
                 try
                 {
                     HttpClient client = new HttpClient();
-
-                    // client.DefaultRequestHeaders.Add("q", UserInput);
 
                     HttpResponseMessage response = await client.GetAsync("https://forkify-api.herokuapp.com/api/search?q="+ SearchRecipes.Query);
 
@@ -277,25 +394,9 @@ namespace MomsSpaghetti.Pages
                     {
                        responseContent = await response.Content.ReadAsStringAsync();
                         JObject jsonObject = JObject.Parse(responseContent);
-                        //TempData["searchResultsString"] = responseContent;
-                        //UserSearch SearchRecipes = new UserSearch();
                         SearchRecipes.Result = jsonObject;
-                        // ViewData["result"] = SearchRecipes.Result["recipes"][0]["title"];
-                       /* var cacheEntry = _cache.CreateEntry("searchRecipeResults");
-                        cacheEntry.SetValue(SearchRecipes.Result);
-                        cacheEntry.Dispose(); //adds item to cache
-                       */
 
                         _cache.Set<JObject>("searchRecipeResults", SearchRecipes.Result);
-                        /*  var props = SearchRecipes.Result.Properties();
-                         var  propsArray = props.ToArray();
-                          var first = propsArray[1].Value[0]["title"];  //Upto VALUE[0] gives the first recipe object
-
-
-                          */
-
-
-
                     }
                 }
                 catch(Exception err)
@@ -306,10 +407,6 @@ namespace MomsSpaghetti.Pages
 
             }
 
-
-
-            // return RedirectToPage("/ResultsPage", new { result = SearchRecipes.Result }) ;
-            //return Content(responseContent);
             if (_cache.Get<List<JObject>>("LikedRecipes") != null)
             {
                 ViewData["LikedRecipes"] = _cache.Get<List<JObject>>("LikedRecipes");
