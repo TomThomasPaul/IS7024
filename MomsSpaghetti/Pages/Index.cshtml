@@ -22,6 +22,10 @@
 
 @{
     var iconString = "icon-heart-outlined";
+    decimal page = 1;
+    decimal resPerPage = 10;
+    int start;
+    int end;
     @if (likedRecipes != null)
     {
         var currentRecipeId = Model.Recipe.RecipeId;
@@ -101,30 +105,57 @@
                 @{if (Model.SearchRecipes.Result != null)
                     {
                         int count = 0;
-                        <ul class="results__list">
-
-
-
-
-
-                            @foreach (var recipe in Model.SearchRecipes.Result["recipes"])
+                        decimal indx = Array.FindIndex(Model.SearchRecipes.Result["recipes"].ToArray(), rec=>rec["recipe_id"].ToString()==Model.Recipe.RecipeId);
+                        if (indx > 0) {
+                            page = Math.Ceiling(indx / resPerPage);
+                            if(indx%resPerPage == 0)
                             {
-                                <li>
-                                    <a class="results__link results__link--active" href="?recipeId=@recipe["recipe_id"]">
-                                        <figure class="results__fig">
-                                            <img src="@recipe["image_url"]" alt="Test">
-                                        </figure>
-                                        <div class="results__data">
-                                            <h4 class="results__name">@recipe["title"]</h4>
-                                            <p class="results__author">@recipe["publisher"]</p>
-                                        </div>
-                                    </a>
-                                </li>
 
-                                count++;
-                                if (count == 10) break;
+
+                                page = page + 1;
                             }
 
+                            start = Convert.ToInt32((page - 1) * resPerPage);
+
+
+
+                            end = Math.Min(Convert.ToInt32(start + resPerPage - 1), Model.SearchRecipes.Result["recipes"].Count()-1);
+
+                        }
+                        else
+                        {
+
+                            start = 0;
+                            end = Math.Min(Convert.ToInt32(resPerPage - 1),Model.SearchRecipes.Result["recipes"].Count()-1);
+                            page = 1;
+                        }
+
+
+                                <ul class="results__list">
+
+                                   
+
+
+
+                                    @*@foreach (var recipe in Model.SearchRecipes.Result["recipes"])*@
+                                    @for (var i = start; i <= end; i++)
+                                    {
+                                        var recipe = Model.SearchRecipes.Result["recipes"][i];
+                                        <li>
+                                            <a class="results__link results__link--active" href="?recipeId=@recipe["recipe_id"]">
+                                                <figure class="results__fig">
+                                                    <img src="@recipe["image_url"]" alt="Test">
+                                                </figure>
+                                                <div class="results__data">
+                                                    <h4 class="results__name">@recipe["title"]</h4>
+                                                    <p class="results__author">@recipe["publisher"]</p>
+                                                </div>
+                                            </a>
+                                        </li>
+
+                                        count++;
+                                        if (count == 10) break;
+                                    }
 
 
 
@@ -133,24 +164,37 @@
 
 
 
-                        </ul>
 
-                        <div class="results__pages">
+                                </ul>
 
-                            <button class="btn-inline results__btn--prev">
-                                <svg class="search__icon">
-                                    <use href="img/icons.svg#icon-triangle-left"></use>
-                                </svg>
-                                <span>Page 1</span>
-                            </button>
-                            <button class="btn-inline results__btn--next">
-                                <span>Page 2</span>
-                                <svg class="search__icon">
-                                    <use href="img/icons.svg#icon-triangle-right"></use>
-                                </svg>
-                            </button>
+                                <div class="results__pages">
+                                    @if (page != 1)
+                                    {
 
-                        </div>
+                                        <button class="btn-inline results__btn--prev" data-goto=@(page-1)>
+                                            <svg class="search__icon">
+                                                <use href="img/icons.svg#icon-triangle-left"></use>
+                                            </svg>
+                                            <span>Page @(page-1)</span>
+                                        </button>
+
+                                    }
+
+                                    @if (page!= Math.Ceiling(Model.SearchRecipes.Result["recipes"].Count()/resPerPage))
+                                    {
+
+                                        <button class="btn-inline results__btn--next" data-goto=@(page+1)>
+                                            <span>Page @(page+1)</span>
+                                            <svg class="search__icon">
+                                                <use href="img/icons.svg#icon-triangle-right"></use>
+                                            </svg>
+                                        </button>
+
+
+                                    }
+
+
+                                </div>
 
                         }
                     }
@@ -386,7 +430,7 @@
 
                 <script>
 
-
+                    let searchResults = {};
 
                     $.fn.toggleLikeBtn = function (isLiked) {
                         let iconString = isLiked ? 'icon-heart' : 'icon-heart-outlined';
@@ -510,7 +554,7 @@
                         //console.log("Clicked decrease");
                         let servingsInit = $(".recipe__info-data--people").text();
                         let servingsNew = 0;
-                        
+
                         servingsInit = parseFloat(servingsInit);
                         if (action == "decrease") {
                             servingsNew = servingsInit - 1;
@@ -523,7 +567,7 @@
                         let first = 0;
                         let second = 0;
                         let sum = 0;
-                       
+
                        // console.log(servings);
 
                         let ingredients = Array.from($(".recipe__ingredient-list").children().find(".recipe__ingredient"));
@@ -574,9 +618,9 @@
                     $.fn.updateIngreds = function (ingredients) {
                         $(".recipe__ingredient-list").empty();
                         console.log("entered render ing");
-                        
+
                         ingredients.forEach(ingredient => {
-                            
+
                             console.log(ingredient);
                             $(".recipe__ingredient-list").append(`<li class="recipe__item">
                                         <svg class="recipe__icon">
@@ -598,9 +642,32 @@
 
                     }
 
-                    $.fn.createButton = function (page,type) {
+                    $.fn.renderRecipe = function(recipe){
+                        const markup = `<li>
+                    <a class="results__link results__link--active" href="?recipeId=${recipe.recipe_id}">
+                        <figure class="results__fig">
+                            <img src="${recipe.image_url}" alt="${recipe.title}">
+                        </figure>
+                        <div class="results__data">
+                            <h4 class="results__name">${recipe.title}</h4>
+                            <p class="results__author">${recipe.publisher}</p>
+                        </div>
+                    </a>
+                </li>`;
+
 
                         
+                        $(".results__list").append(markup);
+
+
+
+
+                    };
+
+
+                    $.fn.createButton = function (page,type) {
+
+
                      return `<button class="btn-inline results__btn--${type}" data-goto=${type === 'prev' ? page - 1 : page + 1}>
                        <span>Page ${type === 'prev' ? page - 1 : page + 1}</span>
                        <svg class="search__icon">
@@ -610,15 +677,56 @@
 
                     }
 
-                    $.fn.pagination = function (action) {
-
-                         
-                        if (action == "next") {
+                    $.fn.renderResults = function (recipes,page = 1, resPerPage = 10) {
 
 
-                            $.fn.createButton($("."));
+                        const start = (page - 1) * resPerPage;
+                        const end = page * resPerPage;
+                        $(".results__list").empty();
+                        recipes.slice(start, end).forEach(recipe => {
+                            $.fn.renderRecipe(recipe);
+                        });//just tneed to pass the function for foreach
 
+
+                        let button;
+                        const pages = Math.ceil(recipes.length / resPerPage);
+
+                        if (page === 1 && pages > 1) {
+
+                            //button go to next page
+                            button = $.fn.createButton(page, 'next');
                         }
+                        else if (page < pages) {
+
+                            //both buttons
+                            button = `${$.fn.createButton(page, 'prev')}${$.fn.createButton(page, 'next')}`;
+                        }
+
+                        else if (page === pages) {
+
+                            //go to prev page
+                            button = $.fn.createButton(page, 'prev');
+                        }
+
+
+                        $(".results__pages").empty();
+                        $(".results__pages").append(button);
+
+
+
+
+
+
+
+
+
+
+
+
+                            
+                          
+
+                      
 
 
                     }
@@ -629,9 +737,49 @@
 
                     //nextpage
 
-                        $(".results__btn--next").click(function () {
+                        $(".results__pages").click(async function (e) {
 
-                            $.fn.pagination("next");
+                            if (!searchResults.recipes) {
+
+                          var result =   await  $.ajax({
+                                type: "GET",
+                                url: "/Index?handler=SearchResults",
+                                //data: {"recipeId" : `@Model.Recipe.RecipeId` },
+                                contentType: "application/json",
+                                dataType: "json"
+                              /*  success: function (response) {
+
+
+                                    searchResults = JSON.parse(response);
+                                    console.log(searchResults);
+                                
+
+                                    //if (response == "false") {
+                                    //    var newLike = $.fn.addLike();
+
+
+                                    //} else {
+
+                                    //    $.fn.deleteLike(JSON.parse(response));
+                                    //}
+
+                                },
+                                failure: function (response) {
+                                    alert(response);
+                                }*/
+                            });
+
+                                searchResults = JSON.parse(result);
+
+
+                            }
+                            
+                            console.log(searchResults);
+
+                            let btn = e.target.closest(`.btn-inline`);
+                            let goToPage = parseInt($(btn).data("goto"), 10);
+                            console.log("clicked");
+                            $.fn.renderResults(searchResults.recipes, goToPage);
 
 
                         });

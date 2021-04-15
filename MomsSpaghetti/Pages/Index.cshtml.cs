@@ -42,6 +42,9 @@ namespace MomsSpaghetti.Pages
         [BindProperty(SupportsGet = true)]
         public Boolean getMostSearched { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public Boolean getSchema { get; set; }
+
 
         public IndexModel(ILogger<IndexModel> logger, IMemoryCache cache)
         {
@@ -60,11 +63,19 @@ namespace MomsSpaghetti.Pages
 
             }
 
-            if (getMostSearched == true)
+            if (getMostSearched == true || getSchema ==true)
             {
-
+                string fileName = "";
+                if(getMostSearched == true)
+                {
+                    fileName = "Data_Feed.json";
+                }
+                else
+                {
+                    fileName = "dataFeedSchema.json";
+                }
                 Console.WriteLine("API hit");
-                using (StreamReader r = new StreamReader("Data_Feed.json"))
+                using (StreamReader r = new StreamReader(fileName))
                 {
 
                     var json = r.ReadToEnd();
@@ -211,7 +222,7 @@ namespace MomsSpaghetti.Pages
                                     writeFile = true;
                                 }
                              
-                                //result = jobj.ToString();
+                                //result = j obj.ToString();
                                 //Console.WriteLine(result);
                             }
 
@@ -222,16 +233,6 @@ namespace MomsSpaghetti.Pages
 
                             }
 
-                            //write to Jsonfile
-
-
-
-
-                            // string result = string.Empty;
-
-
-
-                            Console.WriteLine($"{mostSearched}");
 
 
 
@@ -293,6 +294,16 @@ namespace MomsSpaghetti.Pages
 
 
             return new JsonResult(response);
+        }
+
+        public ActionResult OnGetSearchResults()
+        {
+
+
+            var cachedResult = _cache.Get<JObject>("searchRecipeResults");
+            return new JsonResult(JsonConvert.SerializeObject(cachedResult));
+
+
         }
 
         public  ActionResult OnPostSend()
