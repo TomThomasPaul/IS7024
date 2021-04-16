@@ -286,12 +286,12 @@
 
 
 
-                                <button class="btn-small recipe__btn">
+                                @*<button class="btn-small recipe__btn">
                                     <svg class="search__icon">
                                         <use href="img/icons.svg#icon-shopping-cart"></use>
                                     </svg>
                                     <span>Add to shopping list</span>
-                                </button>
+                                </button>*@
                             </div>
 
                             <div class="recipe__directions">
@@ -329,91 +329,116 @@
 
 
                     <div class="shopping">
-                        <h2 class="heading-2">My Shopping List</h2>
+                        <h2 class="heading-2">Nutrient List</h2>
+                       @* <input type="text" class="search__field nutrient-search-field" placeholder="Search Nutrients..">
+                        <button class="btn search__nutrient_btn" type="submit">
+                            <svg class="search__icon">
+                                <use href="img/icons.svg#icon-magnifying-glass"></use>
+                            </svg>
+                            <span>Get Nutrients</span>
+                        </button>*@
+                    <div class="nutrients-section">
+
+                        <input type="text" class="nutrient-search-field" placeholder="Apple etc...">
+                        <button class="btn search__nutrient_btn" type="submit">
+                            <svg class="search__icon">
+                                <use href="img/icons.svg#icon-magnifying-glass"></use>
+                            </svg>
+                            <span class="nut-btn-label">Search</span>
+                        </button>
+
+                    </div>
+                           
+
+                       
+                        <!--<textarea class="nutrient-info"></textarea>-->
 
                         <ul class="shopping__list">
-
                             <!--
-                    <li class="shopping__item">
-                        <div class="shopping__count">
-                            <input type="number" value="500" step="100">
-                            <p>g</p>
-                        </div>
-                        <p class="shopping__description">Pasta</p>
-                        <button class="shopping__delete btn-tiny">
-                            <svg>
-                                <use href="img/icons.svg#icon-circle-with-cross"></use>
-                            </svg>
-                        </button>
-                    </li>
+         <li class="recipe__item">
 
-                    <li class="shopping__item">
-                        <div class="shopping__count">
-                            <input type="number" value="0.5" step="0.1">
-                            <p>cup</p>
-                        </div>
-                        <p class="shopping__description">Ricotta cheese</p>
-                        <button class="shopping__delete btn-tiny">
-                            <svg>
-                                <use href="img/icons.svg#icon-circle-with-cross"></use>
-                            </svg>
-                        </button>
-                    </li>
 
-                    <li class="shopping__item">
-                        <div class="shopping__count">
-                            <input type="number" value="3.5" step="0.1">
-                            <p>tbsp</p>
-                        </div>
-                        <p class="shopping__description">Toasted almond slices</p>
-                        <button class="shopping__delete btn-tiny">
-                            <svg>
-                                <use href="img/icons.svg#icon-circle-with-cross"></use>
-                            </svg>
-                        </button>
-                    </li>
+        <li class="shopping__item">
+            <div class="shopping__count">
+                <input type="number" value="500" step="100">
+                <p>g</p>
+            </div>
+            <p class="shopping__description">Pasta</p>
+            <button class="shopping__delete btn-tiny">
+                <svg>
+                    <use href="img/icons.svg#icon-circle-with-cross"></use>
+                </svg>
+            </button>
+        </li>
 
-                    <li class="shopping__item">
-                        <div class="shopping__count">
-                            <input type="number" value="0.5" step="0.1">
-                            <p>tbsp</p>
-                        </div>
-                        <p class="shopping__description">Sea salt</p>
-                        <button class="shopping__delete btn-tiny">
-                            <svg>
-                                <use href="img/icons.svg#icon-circle-with-cross"></use>
-                            </svg>
-                        </button>
-                    </li>
+        <li class="shopping__item">
+            <div class="shopping__count">
+                <input type="number" value="0.5" step="0.1">
+                <p>cup</p>
+            </div>
+            <p class="shopping__description">Ricotta cheese</p>
+            <button class="shopping__delete btn-tiny">
+                <svg>
+                    <use href="img/icons.svg#icon-circle-with-cross"></use>
+                </svg>
+            </button>
+        </li>
 
-                    <li class="shopping__item">
-                        <div class="shopping__count">
-                            <input type="number" value="0.25" step="0.1">
-                            <p>cup</p>
-                        </div>
+        <li class="shopping__item">
+            <div class="shopping__count">
+                <input type="number" value="3.5" step="0.1">
+                <p>tbsp</p>
+            </div>
+            <p class="shopping__description">Toasted almond slices</p>
+            <button class="shopping__delete btn-tiny">
+                <svg>
+                    <use href="img/icons.svg#icon-circle-with-cross"></use>
+                </svg>
+            </button>
+        </li>
 
-                        <p class="shopping__description">Minced green onions</p>
-                        <button class="shopping__delete btn-tiny">
-                            <svg>
-                                <use href="img/icons.svg#icon-circle-with-cross"></use>
-                            </svg>
-                        </button>
-                    </li>
+        <li class="shopping__item">
+            <div class="shopping__count">
+                <input type="number" value="0.5" step="0.1">
+                <p>tbsp</p>
+            </div>
+            <p class="shopping__description">Sea salt</p>
+            <button class="shopping__delete btn-tiny">
+                <svg>
+                    <use href="img/icons.svg#icon-circle-with-cross"></use>
+                </svg>
+            </button>
+        </li>
 
-                    <li class="shopping__item">
-                        <div class="shopping__count">
-                            <input type="number" value="45" step="10">
-                            <p>g</p>
-                        </div>
-                        <p class="shopping__description">Sesame seeds</p>
-                        <button class="shopping__delete btn-tiny">
-                            <svg>
-                                <use href="img/icons.svg#icon-circle-with-cross"></use>
-                            </svg>
-                        </button>
-                    </li>
-                    -->
+        <li class="shopping__item">
+            <div class="shopping__count">
+                <input type="number" value="0.25" step="0.1">
+                <p>cup</p>
+            </div>
+
+            <p class="shopping__description">Minced green onions</p>
+            <button class="shopping__delete btn-tiny">
+                <svg>
+                    <use href="img/icons.svg#icon-circle-with-cross"></use>
+                </svg>
+            </button>
+        </li>
+
+        <li class="shopping__item">
+            <div class="shopping__count">
+                <input type="number" value="45" step="10">
+                <p>g</p>
+            </div>
+            <p class="shopping__description">Sesame seeds</p>
+            <button class="shopping__delete btn-tiny">
+                <svg>
+                    <use href="img/icons.svg#icon-circle-with-cross"></use>
+                </svg>
+            </button>
+        </li>
+                         -->
                         </ul>
+
 
                         <div class="copyright">
                             &copy; MomsSpaghetti
@@ -656,7 +681,7 @@
                 </li>`;
 
 
-                        
+
                         $(".results__list").append(markup);
 
 
@@ -723,10 +748,10 @@
 
 
 
-                            
-                          
 
-                      
+
+
+
 
 
                     }
@@ -747,33 +772,14 @@
                                 //data: {"recipeId" : `@Model.Recipe.RecipeId` },
                                 contentType: "application/json",
                                 dataType: "json"
-                              /*  success: function (response) {
 
-
-                                    searchResults = JSON.parse(response);
-                                    console.log(searchResults);
-                                
-
-                                    //if (response == "false") {
-                                    //    var newLike = $.fn.addLike();
-
-
-                                    //} else {
-
-                                    //    $.fn.deleteLike(JSON.parse(response));
-                                    //}
-
-                                },
-                                failure: function (response) {
-                                    alert(response);
-                                }*/
                             });
 
                                 searchResults = JSON.parse(result);
 
 
                             }
-                            
+
                             console.log(searchResults);
 
                             let btn = e.target.closest(`.btn-inline`);
@@ -813,7 +819,83 @@
                             }
 
                         });
+                        //nutrient search
+                        $(".search__nutrient_btn").click(async function (event) {
 
+                            if ($(".nutrient-search-field").val() != "") {
+
+                                $(".shopping__list").empty();
+                                let val = $(".nutrient-search-field").val();
+
+
+                              var result = await  $.ajax({
+                                    url: `http://localhost:33974/?query=${val}`,
+                                        type: "GET",
+                                        crossDomain: true,
+                                        beforeSend: function (xhr) {
+                                           xhr.withCredentials = true;
+                                        },
+
+                                         headers: {
+                                             'Access-Control-Allow-Origin': '*'
+
+
+                                         },
+                                         contentType: "application/json",
+                                         dataType: "json"
+                                        /* success: function (data) {
+                                             console.log(data);
+
+
+
+                                         },
+                                         failure: function (response) {
+                                             alert(response);
+                                         }*/
+
+                                    });
+
+                                
+
+                               
+                                console.log(result);
+
+                                let nutrientsArray = result[0].foodNutrients.map(nutrient => {
+
+
+                                    return nutrient.name + " : " + nutrient.amount + nutrient.unitName;
+
+
+                                });
+
+                                console.log(nutrientsArray);
+                                nutrientsArray.forEach(nutrient => {
+
+                                    let markup = `<li class="recipe__item">
+                                                <svg class="recipe__icon">
+                                                    <use href="img/icons.svg#icon-check"></use>
+                                                </svg>
+                                                <div class="recipe__ingredient">
+                                                    <p>${nutrient}</p>
+
+                                                </div>
+
+                                            </li>`
+                                    
+                                    $(".shopping__list").append(markup);
+
+                                });
+
+                               
+
+                            
+                                    event.preventDefault();
+
+
+
+                            }
+
+                        });
 
                         $(".recipe__love").click(function () {
 

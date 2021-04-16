@@ -25,11 +25,15 @@ namespace MomsSpaghetti
         {
             services.AddRazorPages();
             services.AddMemoryCache();
+            services.AddCors();
+            services.AddMvc();
             services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
             services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;
             });
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,11 +49,19 @@ namespace MomsSpaghetti
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+          
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseCors(x => x
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .SetIsOriginAllowed(origin => true) // allow any origin
+               .AllowCredentials()); // allow credentials
+
+            //app.UseCors(builder =>
+            //builder.WithOrigins("https://localhost:44329"));
 
             app.UseAuthorization();
 
@@ -57,6 +69,9 @@ namespace MomsSpaghetti
             {
                 endpoints.MapRazorPages();
             });
+
+
+            
         }
     }
 }

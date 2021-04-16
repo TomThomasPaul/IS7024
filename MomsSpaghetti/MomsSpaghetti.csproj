@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Grpc.Core" Version="2.37.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.14" />
   </ItemGroup>
