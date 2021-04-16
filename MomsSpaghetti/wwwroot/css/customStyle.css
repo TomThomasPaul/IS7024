@@ -641,7 +641,7 @@ body {
 .shopping__list {
     list-style: none;
     max-height: 77rem;
-    overflow: scroll;
+    overflow: hidden;
     margin-top: 25px;
 }
 
