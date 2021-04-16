@@ -144,7 +144,7 @@ namespace MomsSpaghetti.Pages
 
                                     Recipe.Ingredients.SetValue(obj["updatedIng"],i);
                                         
-                                        //ingArr.Prepend("1").Join(" ");
+                                        
                                 }
                                 i++;
                             }
@@ -152,10 +152,7 @@ namespace MomsSpaghetti.Pages
 
                             string filepath = "Data_Feed.json";
                             Boolean writeFile = false;
-                            //  System.IO.File.WriteAllText(filepath, recipeDetails);
-                            // var result = "";
-
-                            //set cache of reciped
+                           
                             var mostSearched = new List<JObject>();
                             var mostSearchedJSON = "";
                             if (_cache.Get<List<JObject>>("mostSearched") == null)
@@ -177,7 +174,7 @@ namespace MomsSpaghetti.Pages
                                 }
                                 
 
-                                //  var item = cachedResult.SingleOrDefault(x => x["id"].ToString().Equals(recipeId));
+                                
                             }
                             
                             mostSearchedJSON = JsonConvert.SerializeObject(mostSearched);
@@ -192,16 +189,15 @@ namespace MomsSpaghetti.Pages
                                 
                                    
                                    
-                                    // foreach (var item in jobj.Properties())
+                                    
                                     foreach (var item in jobj)
                                         {
-                                        //item.Value = item.Value.ToString().Replace("v1", "v2");
+                                       
                                         var recId = item["recipe"]["recipe_id"];
                                         if (!Recipe.RecipeId.Equals(item["recipe"]["recipe_id"].ToString()))
                                         {
                                             JObject obj = new JObject();
-                                           // var temp = mostSearched.SingleOrDefault(x => x["recipe"]["recipe_id"].ToString().Equals(Recipe.RecipeId));
-
+                                           
 
                                             if (mostSearched.SingleOrDefault(x => x["recipe"]["recipe_id"].ToString().Equals(Recipe.RecipeId)) == null)
                                             {
