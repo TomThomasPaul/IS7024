@@ -187,6 +187,31 @@ https://nutrientdiary20210416013720.azurewebsites.net/?query=
 
 **Then** I should see all nutrients for Apple.
 
+
+### Requirement 8.0 : Generate a JSON feed and a JSON schema file
+
+#### Scenario
+
+As a user I want to access relevant application data for reporting purposes.
+
+#### Dependencies
+
+Recipe data is available
+
+
+#### Example 8.1 :
+
+**Given** Recipe data is available
+
+**When** I go to https://momsspaghetti.azurewebsites.net/?getMostSearched=true
+
+**Then** I should see details of visted recipes in JSON.
+
+**When** I go to https://momsspaghetti.azurewebsites.net/?getSchema=true
+
+**Then** I should see the schema for visted recipes in JSON .
+
+
 ---
 
 ## Scrum Roles
