@@ -457,6 +457,18 @@
 
                     let searchResults = {};
 
+                    $.fn.renderLoader = function () {
+
+                        const loader = `<div class="loader"> 
+                     <svg> 
+                             <use href="img/icons.svg#icon-cw"></use> 
+                      </svg>
+                      </div>` ;
+
+                        
+                        $(".shopping__list").append(loader);
+                    }
+
                     $.fn.toggleLikeBtn = function (isLiked) {
                         let iconString = isLiked ? 'icon-heart' : 'icon-heart-outlined';
 
@@ -825,11 +837,13 @@
                             if ($(".nutrient-search-field").val() != "") {
 
                                 $(".shopping__list").empty();
+                                $.fn.renderLoader();
                                 let val = $(".nutrient-search-field").val();
 
 
                               var result = await  $.ajax({
-                                    url: `http://localhost:33974/?query=${val}`,
+                                  
+                                        url: `https://nutrientdiary20210416013720.azurewebsites.net/?query=${val}`,
                                         type: "GET",
                                         crossDomain: true,
                                         beforeSend: function (xhr) {
@@ -843,22 +857,19 @@
                                          },
                                          contentType: "application/json",
                                          dataType: "json"
-                                        /* success: function (data) {
-                                             console.log(data);
-
-
-
-                                         },
-                                         failure: function (response) {
-                                             alert(response);
-                                         }*/
+                                      
 
                                     });
 
                                 
+                                if (result[0] == undefined) {
 
+                                    alert("No nutrient data found for this search. PLease Try again");
+                                    $(".shopping__list").empty();
+                                    return;
+                                }
                                
-                                console.log(result);
+                                
 
                                 let nutrientsArray = result[0].foodNutrients.map(nutrient => {
 
@@ -869,6 +880,7 @@
                                 });
 
                                 console.log(nutrientsArray);
+                                $(".shopping__list").empty();
                                 nutrientsArray.forEach(nutrient => {
 
                                     let markup = `<li class="recipe__item">
@@ -889,7 +901,7 @@
                                
 
                             
-                                    event.preventDefault();
+                                    //event.preventDefault();
 
 
 
