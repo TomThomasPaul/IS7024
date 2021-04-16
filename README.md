@@ -37,10 +37,10 @@ https://forkify-api.herokuapp.com/api/search?q=
 
 https://forkify-api.herokuapp.com/api/get?rId=
 
-## NutrientDiary Group API endpoint- hosted in Azure
+## External Group API endpoint- hosted in Azure by NutrientDiary
 https://nutrientdiary20210416013720.azurewebsites.net/?query=
 
-## JSON feed and JSON schema for most visted recipes
+## Our JSON feed and JSON schema - Most Visted Recipes
 
 https://momsspaghetti.azurewebsites.net/?getMostSearched=true
 https://momsspaghetti.azurewebsites.net/?getSchema=true
